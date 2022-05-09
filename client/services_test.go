@@ -1,4 +1,4 @@
-package zenduty
+package client
 
 import "testing"
 
