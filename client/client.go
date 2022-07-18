@@ -24,22 +24,23 @@ type Config struct {
 }
 
 type Client struct {
-	baseURL      *url.URL
-	client       *http.Client
-	Config       *Config
-	Teams        *TeamService
-	Services     *Service
-	Schedules    *ScheduleService
-	Roles        *RoleService
-	Integrations *IntegrationServerice
-	Incidents    *IncidentService
-	Esp          *EspService
-	Members      *MemberService
-	Invite       *InviteService
-	Users        *UserService
-	AlertRules   *AlertRuleService
-	Priority     *PriorityService
-	Tags         *TagsService
+	baseURL           *url.URL
+	client            *http.Client
+	Config            *Config
+	Teams             *TeamService
+	Services          *Service
+	Schedules         *ScheduleService
+	Roles             *RoleService
+	Integrations      *IntegrationServerice
+	Incidents         *IncidentService
+	Esp               *EspService
+	Members           *MemberService
+	Invite            *InviteService
+	Users             *UserService
+	AlertRules        *AlertRuleService
+	Priority          *PriorityService
+	Tags              *TagsService
+	MaintenanceWindow *MaintenanceWindowService
 }
 
 type Response struct {
@@ -79,6 +80,7 @@ func NewClient(config *Config) (*Client, error) {
 	c.AlertRules = &AlertRuleService{c}
 	c.Priority = &PriorityService{c}
 	c.Tags = &TagsService{c}
+	c.MaintenanceWindow = &MaintenanceWindowService{c}
 
 	return c, nil
 
@@ -154,9 +156,10 @@ func (c *Client) checkResponse(res *Response) error {
 
 func (c *Client) decodeErrorResponse(res *Response) error {
 
-	v := &errorResponse{Error: &Error{ErrorResponse: res}}
+	v := &errorResponse{Error: &Error{ErrorResponse: res, Code: res.Response.StatusCode}}
 	if err := c.DecodeJSON(res, v); err != nil {
-		return fmt.Errorf("%s API call to %s failed: %v", res.Response.Request.Method, res.Response.Request.URL.String(), res.Response.Status)
+
+		return fmt.Errorf("%s APIs call to %s failed: %v", res.Response.Request.Method, res.Response.Request.URL.String(), res.Response.Status)
 	}
 
 	return v.Error

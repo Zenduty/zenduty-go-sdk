@@ -19,7 +19,7 @@ type GetUsers struct {
 }
 
 func (c *UserService) GetUsers(email string) ([]GetUsers, error) {
-	path := "/api/account/users"
+	path := "/api/account/users/"
 
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {

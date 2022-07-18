@@ -12,6 +12,15 @@ type Priority struct {
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	Color         string `json:"color"`
+	Team          int    `json:"team,omitempty"`
+	Creation_Date string `json:"creation_date,omitempty"`
+}
+
+type ReadPriority struct {
+	Unique_Id     string `json:"unique_id,omitempty"`
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	Color         string `json:"color"`
 	Team          string `json:"team,omitempty"`
 	Creation_Date string `json:"creation_date,omitempty"`
 }
@@ -30,13 +39,13 @@ func (c *PriorityService) CreatePriority(team string, priority *Priority) (*Prio
 	return &s, nil
 }
 
-func (c *PriorityService) GetPriority(team string) ([]Priority, error) {
+func (c *PriorityService) GetPriority(team string) ([]ReadPriority, error) {
 	path := fmt.Sprintf("/api/account/teams/%s/priority/", team)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
 	}
-	var s []Priority
+	var s []ReadPriority
 	err = json.Unmarshal(body.BodyBytes, &s)
 	if err != nil {
 		return nil, err
@@ -44,13 +53,13 @@ func (c *PriorityService) GetPriority(team string) ([]Priority, error) {
 	return s, nil
 }
 
-func (c *PriorityService) GetPriorityById(team, id string) (*Priority, error) {
+func (c *PriorityService) GetPriorityById(team, id string) (*ReadPriority, error) {
 	path := fmt.Sprintf("/api/account/teams/%s/priority/%s/", team, id)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
 	}
-	var s Priority
+	var s ReadPriority
 	err = json.Unmarshal(body.BodyBytes, &s)
 	if err != nil {
 		return nil, err
