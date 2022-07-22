@@ -37,6 +37,7 @@ type Integration struct {
 	Application           string               `json:"application"`
 	Application_Reference ApplicationReference `json:"application_reference"`
 	Integration_key       string               `json:"integration_key"`
+	Webhook_url           string               `json:"webhook_url"`
 	Created_By            string               `json:"created_by"`
 	Is_Enabled            bool                 `json:"is_enabled"`
 	Create_Incident_For   int                  `json:"create_incident_for"`
