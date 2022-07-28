@@ -45,6 +45,21 @@ func (c *RoleService) GetRoles(team string) ([]Roles, error) {
 	return r, nil
 }
 
+func (c *RoleService) GetRolesById(team, id string) (*Roles, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/roles/%s/", team, id)
+	body, err := c.client.newRequestDo("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+	var r Roles
+	err = json.Unmarshal(body.BodyBytes, &r)
+	if err != nil {
+		return nil, err
+	}
+	return &r, nil
+
+}
+
 func (c *RoleService) UpdateRoles(team string, role *Roles) (*Roles, error) {
 	path := fmt.Sprintf("/api/account/teams/%s/roles/%s/", team, role.Unique_Id)
 

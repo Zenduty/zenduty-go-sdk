@@ -22,9 +22,12 @@ type ApplicationReference struct {
 }
 
 type IntegrationCreate struct {
-	Name        string `json:"name"`
-	Summary     string `json:"summary"`
-	Application string `json:"application"`
+	Name                string `json:"name"`
+	Summary             string `json:"summary"`
+	Application         string `json:"application"`
+	Is_Enabled          bool   `json:"is_enabled"`
+	Create_Incident_For int    `json:"create_incidents_for"`
+	Default_Urgency     int    `json:"default_urgency"`
 }
 
 type Integration struct {
@@ -40,15 +43,30 @@ type Integration struct {
 	Webhook_url           string               `json:"webhook_url"`
 	Created_By            string               `json:"created_by"`
 	Is_Enabled            bool                 `json:"is_enabled"`
-	Create_Incident_For   int                  `json:"create_incident_for"`
+	Create_Incident_For   int                  `json:"create_incidents_for"`
 	Integration_Type      int                  `json:"integration_type"`
-	Default_Urgency       int                  `json:"default_urggency"`
+	Default_Urgency       int                  `json:"default_urgency"`
 }
 
 func (c *IntegrationServerice) CreateIntegration(team string, service_id string, integration *IntegrationCreate) (*Integration, error) {
 	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/", team, service_id)
 
 	body, err := c.client.newRequestDo("POST", path, integration)
+	if err != nil {
+		return nil, err
+	}
+	var i Integration
+	err = json.Unmarshal(body.BodyBytes, &i)
+	if err != nil {
+		return nil, err
+	}
+	return &i, nil
+}
+
+func (c *IntegrationServerice) UpdateIntegration(team string, service_id string, integration_id string, integration *IntegrationCreate) (*Integration, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/", team, service_id, integration_id)
+
+	body, err := c.client.newRequestDo("PATCH", path, integration)
 	if err != nil {
 		return nil, err
 	}

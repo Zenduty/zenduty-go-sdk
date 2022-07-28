@@ -41,6 +41,8 @@ type Client struct {
 	Priority          *PriorityService
 	Tags              *TagsService
 	MaintenanceWindow *MaintenanceWindowService
+	NotificationRules *NotificationRulesService
+	ContactMethod     *ContactMethodService
 }
 
 type Response struct {
@@ -81,6 +83,8 @@ func NewClient(config *Config) (*Client, error) {
 	c.Priority = &PriorityService{c}
 	c.Tags = &TagsService{c}
 	c.MaintenanceWindow = &MaintenanceWindowService{c}
+	c.NotificationRules = &NotificationRulesService{c}
+	c.ContactMethod = &ContactMethodService{c}
 
 	return c, nil
 
@@ -159,7 +163,7 @@ func (c *Client) decodeErrorResponse(res *Response) error {
 	v := &errorResponse{Error: &Error{ErrorResponse: res, Code: res.Response.StatusCode}}
 	if err := c.DecodeJSON(res, v); err != nil {
 
-		return fmt.Errorf("%s APIs call to %s failed: %v", res.Response.Request.Method, res.Response.Request.URL.String(), res.Response.Status)
+		return fmt.Errorf("%s APIs call to %s failed: %v error: %s", res.Response.Request.Method, res.Response.Request.URL.String(), res.Response.Status, string(res.BodyBytes))
 	}
 
 	return v.Error

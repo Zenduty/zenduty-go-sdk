@@ -19,7 +19,7 @@ type Rules struct {
 
 type EscalationPolicy struct {
 	Name          string  `json:"name"`
-	Description   string  `json:"description"`
+	Description   string  `json:"description,omitempty"`
 	Summary       string  `json:"summary"`
 	Team          string  `json:"team"`
 	Unique_Id     string  `json:"unique_id"`

@@ -23,5 +23,5 @@ type Error struct {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("%s API call to %s failed %v. Errors: %s, Message: %s", e.ErrorResponse.Response.Request.Method, e.ErrorResponse.Response.Request.URL.String(), e.ErrorResponse.Response.Status, e.ErrorResponse.Response.Request.Body, e.Message)
+	return fmt.Sprintf("%s API call to %s failed %v. Errors: %s, Message: %s", e.ErrorResponse.Response.Request.Method, e.ErrorResponse.Response.Request.URL.String(), e.ErrorResponse.Response.Status, string(e.ErrorResponse.BodyBytes), e.Message)
 }
