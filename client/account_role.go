@@ -17,8 +17,10 @@ type AccountRole struct {
 
 type AddRoleToUser struct {
 	AccountRole *string `json:"custom_role"`
-	Username string `json:"name,omitempty"`
+	Username string `json:"user,omitempty"`
 }
+
+
 func (c *AccountRoleService) CreateAccountRole(role *AccountRole) (*AccountRole, error) {
 	path := "/api/account/customroles/"
 	body, err := c.client.newRequestDo("POST", path, role)
@@ -47,7 +49,7 @@ func (c *AccountRoleService) UpdateAccountRole(unique_id string,role *AccountRol
 	return &r, nil
 }
 func (c *AccountRoleService) DeleteAccountRole(id string)  error{
-	path := fmt.Sprintf("/api/account/teams/customroles/%s/", id)
+	path := fmt.Sprintf("/api/account/customroles/%s/", id)
 	_, err := c.client.newRequestDo("DELETE", path, nil)
 	if err != nil {
 		return err
