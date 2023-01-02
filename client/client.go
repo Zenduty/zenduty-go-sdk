@@ -43,6 +43,7 @@ type Client struct {
 	MaintenanceWindow *MaintenanceWindowService
 	NotificationRules *NotificationRulesService
 	ContactMethod     *ContactMethodService
+	AccountRole    	 *AccountRoleService
 }
 
 type Response struct {
@@ -85,6 +86,7 @@ func NewClient(config *Config) (*Client, error) {
 	c.MaintenanceWindow = &MaintenanceWindowService{c}
 	c.NotificationRules = &NotificationRulesService{c}
 	c.ContactMethod = &ContactMethodService{c}
+	c.AccountRole = &AccountRoleService{c}
 
 	return c, nil
 
