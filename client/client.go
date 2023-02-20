@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -43,7 +43,9 @@ type Client struct {
 	MaintenanceWindow *MaintenanceWindowService
 	NotificationRules *NotificationRulesService
 	ContactMethod     *ContactMethodService
-	AccountRole    	 *AccountRoleService
+	AccountRole       *AccountRoleService
+	GlobalRouter      *GlobalRouterService
+	Events            *EventsService
 }
 
 type Response struct {
@@ -87,7 +89,8 @@ func NewClient(config *Config) (*Client, error) {
 	c.NotificationRules = &NotificationRulesService{c}
 	c.ContactMethod = &ContactMethodService{c}
 	c.AccountRole = &AccountRoleService{c}
-
+	c.GlobalRouter = &GlobalRouterService{c}
+	c.Events = &EventsService{c}
 	return c, nil
 
 }
@@ -125,7 +128,7 @@ func (c *Client) doRequest(req *http.Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}

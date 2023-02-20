@@ -24,7 +24,7 @@ type members struct {
 
 type CreateTeams struct {
 	Name      string `json:"name"`
-	Unique_Id string `json:"unique_id",omitempty`
+	Unique_Id string `json:"unique_id,omitempty"`
 }
 type Team struct {
 	Unique_Id     string    `json:"unique_id"`

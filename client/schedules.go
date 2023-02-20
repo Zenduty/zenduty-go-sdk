@@ -33,8 +33,8 @@ type Layers struct {
 	RotationEndTime   string         `json:"rotation_end_time"`
 	UniqueId          string         `json:"unique_id"`
 	LastEdited        string         `json:"last_edited"`
-	RestrictionType   int            `json:"restriction_type",omitempty`
-	IsActive          bool           `json:"is_active",omitempty`
+	RestrictionType   int            `json:"restriction_type,omitempty"`
+	IsActive          bool           `json:"is_active,omitempty"`
 	Restrictions      []Restrictions `json:"restrictions"`
 	Users             []Users        `json:"users"`
 }
@@ -48,7 +48,7 @@ type CreateLayers struct {
 	Name              string            `json:"name"`
 	RotationStartTime string            `json:"rotation_start_time"`
 	RotationEndTime   string            `json:"rotation_end_time"`
-	RestrictionType   int               `json:"restriction_type",omitempty`
+	RestrictionType   int               `json:"restriction_type,omitempty"`
 	Users             []CreateUserLayer `json:"users"`
 	Restrictions      []Restrictions    `json:"restrictions"`
 }

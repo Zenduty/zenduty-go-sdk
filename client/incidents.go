@@ -2,6 +2,8 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
+	"net/url"
 )
 
 type IncidentService service
@@ -58,7 +60,7 @@ type Incidents struct {
 	Acknowledged_Date        string                   `json:"acknowledged_date"`
 	Context_Window_start     string                   `json:"context_window_start"`
 	Context_Window_end       string                   `json:"context_window_end"`
-	Tags                     []string                 `json:"tags"`
+	Tags                     []IncidentTag            `json:"tags"`
 	Sla                      string                   `json:"sla"`
 	Team_Priority            string                   `json:"team_priority"`
 	Team_Priority_Object     string                   `json:"team_priority_object"`
@@ -73,6 +75,44 @@ type IncidentPagination struct {
 
 type IncidentStatus struct {
 	Status int `json:"status"`
+}
+type AddIncidentNote struct {
+	Note string `json:"note"`
+}
+type IncidentNote struct {
+	UniqueID     string `json:"unique_id"`
+	Incident     int    `json:"incident"`
+	Username     string `json:"user"`
+	Note         string `json:"note"`
+	Name         string `json:"user_name"`
+	CreationDate string `json:"creation_date"`
+}
+
+type IncidentNotes struct {
+	Results  []IncidentNote `json:"results"`
+	Next     string         `json:"next"`
+	Previous string         `json:"previous"`
+	Count    int            `json:"count"`
+}
+
+type IncidentTag struct {
+	UniqueID     string `json:"unique_id"`
+	Name         string `json:"name"`
+	Incident     int    `json:"incident"`
+	CreationDate string `json:"creation_date"`
+	TagID        string `json:"tag_id"`
+	Color        string `json:"color"`
+}
+
+type AddIncidentTag struct {
+	TagID string `json:"team_tag"` // uniqueID of team tags
+}
+
+type IncidentAlerts struct {
+	Count    int             `json:"count"`
+	Next     string          `json:"next"`
+	Previous string          `json:"previous"`
+	Alerts   []AlertResponse `json:"results"`
 }
 
 func (c *IncidentService) CreateIncident(incident *Incident) (*Incidents, error) {
@@ -90,9 +130,8 @@ func (c *IncidentService) CreateIncident(incident *Incident) (*Incidents, error)
 	return &i, nil
 }
 
-func (c *IncidentService) UpdateIncident(id string, incident *IncidentStatus) (*Incidents, error) {
-	path := "/api/incidents/" + id + "/"
-
+func (c *IncidentService) UpdateIncident(incidentNumber string, incident *IncidentStatus) (*Incidents, error) {
+	path := fmt.Sprintf("/api/incidents/%s/", incidentNumber)
 	body, err := c.client.newRequestDo("PATCH", path, incident)
 	if err != nil {
 		return nil, err
@@ -119,8 +158,8 @@ func (c *IncidentService) GetIncidents() (*IncidentPagination, error) {
 	return &i, nil
 }
 
-func (c *IncidentService) GetIncidentByNumber(id string) (*Incidents, error) {
-	path := "/api/incidents/" + id + "/"
+func (c *IncidentService) GetIncidentByNumber(incidentNumber string) (*Incidents, error) {
+	path := fmt.Sprintf("/api/incidents/%s/", incidentNumber)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
@@ -131,4 +170,129 @@ func (c *IncidentService) GetIncidentByNumber(id string) (*Incidents, error) {
 		return nil, err
 	}
 	return &i, nil
+}
+
+func (c *IncidentService) CreateIncidentNote(incidentNumber string, note *AddIncidentNote) (*IncidentNote, error) {
+	path := fmt.Sprintf("/api/incidents/%s/note/", incidentNumber)
+
+	body, err := c.client.newRequestDo("POST", path, note)
+	if err != nil {
+		return nil, err
+	}
+	var i IncidentNote
+	err = json.Unmarshal(body.BodyBytes, &i)
+	if err != nil {
+		return nil, err
+	}
+	return &i, nil
+}
+
+func (c *IncidentService) UpdateIncidentNote(incidentNumber, noteID string, note *AddIncidentNote) (*IncidentNote, error) {
+	path := fmt.Sprintf("/api/incidents/%s/note/%s/", incidentNumber, noteID)
+
+	body, err := c.client.newRequestDo("PUT", path, note)
+	if err != nil {
+		return nil, err
+	}
+	var i IncidentNote
+	err = json.Unmarshal(body.BodyBytes, &i)
+	if err != nil {
+		return nil, err
+	}
+	return &i, nil
+}
+
+func (c *IncidentService) GetIncidentNotes(incidentNumber string) (*IncidentNotes, error) {
+	path := &url.URL{
+		Path: fmt.Sprintf("/api/incidents/%s/note/", incidentNumber),
+	}
+	body, err := c.client.newRequestDo("GET", path.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	var i IncidentNotes
+	err = json.Unmarshal(body.BodyBytes, &i)
+	if err != nil {
+		return nil, err
+	}
+	return &i, nil
+
+}
+
+func (c *IncidentService) DeleteIncidentNote(incidentNumber, noteID string) error {
+	path := fmt.Sprintf("/api/incidents/%s/note/%s/", incidentNumber, noteID)
+	_, err := c.client.newRequestDo("DELETE", path, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *IncidentService) CreateIncidentTags(incidentNumber string, note *AddIncidentTag) (*IncidentTag, error) {
+	path := fmt.Sprintf("/api/incidents/%s/tags/", incidentNumber)
+
+	body, err := c.client.newRequestDo("POST", path, note)
+	if err != nil {
+		return nil, err
+	}
+	var i IncidentTag
+	err = json.Unmarshal(body.BodyBytes, &i)
+	if err != nil {
+		return nil, err
+	}
+	return &i, nil
+}
+
+func (c *IncidentService) GetIncidentTags(incidentNumber string) ([]IncidentTag, error) {
+	path := fmt.Sprintf("/api/incidents/%s/tags/", incidentNumber)
+
+	body, err := c.client.newRequestDo("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+	var r []IncidentTag
+	err = json.Unmarshal(body.BodyBytes, &r)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+func (c *IncidentService) GetIncidentTag(incidentNumber, tagID string) (*IncidentTag, error) {
+	path := fmt.Sprintf("/api/incidents/%s/tags/%s/", incidentNumber, tagID)
+
+	body, err := c.client.newRequestDo("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+	var r IncidentTag
+	err = json.Unmarshal(body.BodyBytes, &r)
+	if err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
+func (c *IncidentService) DeleteIncidentTag(incidentNumber, tagID string) error {
+	path := fmt.Sprintf("/api/incidents/%s/tags/%s/", incidentNumber, tagID)
+	_, err := c.client.newRequestDo("DELETE", path, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *IncidentService) GetIncientAlerts(incidentNumber string) (*IncidentAlerts, error) {
+
+	path := fmt.Sprintf("/api/incidents/%s/alerts/", incidentNumber)
+	body, err := c.client.newRequestDo("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+	var r IncidentAlerts
+	err = json.Unmarshal(body.BodyBytes, &r)
+	if err != nil {
+		return nil, err
+	}
+	return &r, nil
 }

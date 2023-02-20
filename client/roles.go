@@ -8,12 +8,12 @@ import (
 type RoleService service
 
 type Roles struct {
-	Team          string `json:"team",omitempty`
-	Unique_Id     string `json:"unique_id",omitempty`
+	Team          string `json:"team,omitempty"`
+	Unique_Id     string `json:"unique_id,omitempty"`
 	Title         string `json:"title"`
 	Description   string `json:"description"`
-	Creation_Date string `json:"creation_date",omitempty`
-	Rank          int    `json:"rank",omitempty`
+	Creation_Date string `json:"creation_date,omitempty"`
+	Rank          int    `json:"rank,omitempty"`
 }
 
 func (c *RoleService) CreateRole(team string, role *Roles) (*Roles, error) {

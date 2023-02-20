@@ -8,10 +8,10 @@ import (
 type MemberService service
 
 type Member struct {
-	Unique_Id string `json:"unique_id",omitempty`
-	Team      string `json:"team",omitempty`
-	User      string `json:"user",omitempty`
-	Role      int    `json:"role",omitempty`
+	Unique_Id string `json:"unique_id,omitempty"`
+	Team      string `json:"team"`
+	User      string `json:"user"`
+	Role      int    `json:"role,omitempty"`
 }
 
 type MemberResponse struct {
