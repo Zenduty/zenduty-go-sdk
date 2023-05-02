@@ -8,19 +8,19 @@ import (
 type TagsService service
 
 type Tag struct {
-	Unique_Id     string `json:"unique_id,omitempty"`
-	Name          string `json:"name"`
-	Color         string `json:"color"`
-	Team          int    `json:"team,omitempty"`
-	Creation_Date string `json:"creation_date,omitempty"`
+	UniqueID     string `json:"unique_id,omitempty"`
+	Name         string `json:"name"`
+	Color        string `json:"color"`
+	Team         int    `json:"team,omitempty"`
+	CreationDate string `json:"creation_date,omitempty"`
 }
 
 type ReadTag struct {
-	Unique_Id     string `json:"unique_id,omitempty"`
-	Name          string `json:"name"`
-	Color         string `json:"color"`
-	Team          string `json:"team,omitempty"`
-	Creation_Date string `json:"creation_date,omitempty"`
+	UniqueID     string `json:"unique_id,omitempty"`
+	Name         string `json:"name"`
+	Color        string `json:"color"`
+	Team         string `json:"team,omitempty"`
+	CreationDate string `json:"creation_date,omitempty"`
 }
 
 func (c *TagsService) CreateTag(team string, tags *Tag) (*Tag, error) {
@@ -37,8 +37,8 @@ func (c *TagsService) CreateTag(team string, tags *Tag) (*Tag, error) {
 	return &s, nil
 }
 
-func (c *TagsService) UpdateTag(team string, tag_id string, tags *Tag) (*Tag, error) {
-	path := fmt.Sprintf("/api/account/teams/%s/tags/%s/", team, tag_id)
+func (c *TagsService) UpdateTag(team string, tagID string, tags *Tag) (*Tag, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/tags/%s/", team, tagID)
 	body, err := c.client.newRequestDo("PUT", path, tags)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (c *TagsService) GetTags(team string) ([]ReadTag, error) {
 	return s, nil
 }
 
-func (c *TagsService) GetTagId(team, id string) (*ReadTag, error) {
+func (c *TagsService) GetTagID(team, id string) (*ReadTag, error) {
 	path := fmt.Sprintf("/api/account/teams/%s/tags/%s/", team, id)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {

@@ -8,23 +8,23 @@ import (
 type Service service
 
 type Services struct {
-	Name                   string `json:"name"`
-	Creation_Date          string `json:"creation_date"`
-	Summary                string `json:"summary"`
-	Description            string `json:"description"`
-	Unique_Id              string `json:"unique_id,omitempty"`
-	Auto_Resolve_Timeout   int    `json:"auto_resolve_timeout,omitempty"`
-	Created_By             string `json:"created_by,omitempty"`
-	Team_Priority          string `json:"team_priority"`
-	Task_Template          string `json:"task_template"`
-	Acknowledgment_Timeout int    `json:"acknowledge_timeout,omitempty"`
-	Status                 int    `json:"status,omitempty"`
-	Escalation_Policy      string `json:"escalation_policy"`
-	Team                   string `json:"team"`
-	Sla                    string `json:"sla"`
-	Collation_Time         int    `json:"collation_time"`
-	Collation              int    `json:"collation"`
-	Under_Maintenance      bool   `json:"under_maintenance,omitempty"`
+	Name                  string `json:"name"`
+	CreationDate          string `json:"creation_date"`
+	Summary               string `json:"summary"`
+	Description           string `json:"description"`
+	UniqueID              string `json:"unique_id,omitempty"`
+	AutoResolveTimeout    int    `json:"auto_resolve_timeout,omitempty"`
+	CreatedBy             string `json:"created_by,omitempty"`
+	TeamPriority          string `json:"team_priority"`
+	TaskTemplate          string `json:"task_template"`
+	AcknowledgmentTimeout int    `json:"acknowledge_timeout,omitempty"`
+	Status                int    `json:"status,omitempty"`
+	EscalationPolicy      string `json:"escalation_policy"`
+	Team                  string `json:"team"`
+	SLA                   string `json:"sla"`
+	CollationTime         int    `json:"collation_time"`
+	Collation             int    `json:"collation"`
+	UnderMaintenance      bool   `json:"under_maintenance,omitempty"`
 }
 
 func (c *Service) CreateService(team string, service *Services) (*Services, error) {
@@ -58,7 +58,7 @@ func (c *Service) GetServices(team string) ([]Services, error) {
 	return i, nil
 }
 
-func (c *Service) GetServicesById(team, id string) (*Services, error) {
+func (c *Service) GetServicesByID(team, id string) (*Services, error) {
 	path := fmt.Sprintf("/api/account/teams/%s/services/%s/", team, id)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {

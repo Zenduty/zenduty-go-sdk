@@ -7,10 +7,10 @@ import (
 type InviteService service
 
 type EmailAccounts struct {
-	First_Name string `json:"first_name"`
-	Last_Name  string `json:"last_name"`
-	Email      string `json:"email"`
-	Role       int    `json:"role"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Role      int    `json:"role"`
 }
 
 type Invite struct {
@@ -19,11 +19,11 @@ type Invite struct {
 }
 
 type InviteResponse struct {
-	Unique_Id    string `json:"unique_id"`
-	Team         string `json:"team"`
-	User         User   `json:"user"`
-	Joining_Date string `json:"joining_date"`
-	Role         int    `json:"role"`
+	UniqueID    string `json:"unique_id"`
+	Team        string `json:"team"`
+	User        User   `json:"user"`
+	JoiningDate string `json:"joining_date"`
+	Role        int    `json:"role"`
 }
 
 func (c *InviteService) CreateInvite(invite *Invite) ([]InviteResponse, error) {

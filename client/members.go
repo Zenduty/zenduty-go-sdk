@@ -8,18 +8,18 @@ import (
 type MemberService service
 
 type Member struct {
-	Unique_Id string `json:"unique_id,omitempty"`
-	Team      string `json:"team"`
-	User      string `json:"user"`
-	Role      int    `json:"role,omitempty"`
+	UniqueID string `json:"unique_id,omitempty"`
+	Team     string `json:"team"`
+	User     string `json:"user"`
+	Role     int    `json:"role,omitempty"`
 }
 
 type MemberResponse struct {
-	Unique_Id    string `json:"unique_id"`
-	Team         string `json:"team"`
-	User         User   `json:"user"`
-	Joining_Date string `json:"joining_date"`
-	Role         int    `json:"role"`
+	UniqueID    string `json:"unique_id"`
+	Team        string `json:"team"`
+	User        User   `json:"user"`
+	JoiningDate string `json:"joining_date"`
+	Role        int    `json:"role"`
 }
 
 func (c *MemberService) CreateTeamMember(team string, member *Member) (*Member, error) {
@@ -38,7 +38,7 @@ func (c *MemberService) CreateTeamMember(team string, member *Member) (*Member, 
 }
 
 func (c *MemberService) UpdateTeamMember(member *Member) (*Member, error) {
-	path := fmt.Sprintf("/api/account/teams/%s/members/%s/", member.Team, member.Unique_Id)
+	path := fmt.Sprintf("/api/account/teams/%s/members/%s/", member.Team, member.UniqueID)
 	body, err := c.client.newRequestDo("PATCH", path, member)
 	if err != nil {
 		return nil, err

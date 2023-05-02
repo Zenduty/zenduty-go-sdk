@@ -8,11 +8,11 @@ import (
 type AlertRuleService service
 
 type AlertAction struct {
-	UniqueId         string `json:"unique_id,omitempty"`
+	UniqueID         string `json:"unique_id,omitempty"`
 	ActionType       int    `json:"action_type"`
 	Key              string `json:"key"`
 	Value            string `json:"value"`
-	Assigned_To      string `json:"assign_to"`
+	AssignedTo       string `json:"assign_to"`
 	EscalationPolicy string `json:"escalation_policy"`
 	Schedule         string `json:"schedule"`
 	TeamPriority     string `json:"team_priority"`
@@ -20,18 +20,18 @@ type AlertAction struct {
 }
 
 type AlertRule struct {
-	Unique_Id   string        `json:"unique_id"`
+	UniqueID    string        `json:"unique_id"`
 	Description string        `json:"description"`
 	Position    int           `json:"position,omitempty"`
 	Stop        bool          `json:"stop,omitempty"`
 	RuleType    int           `json:"ruleType,omitempty"`
-	RuleJson    string        `json:"rule_json"`
+	RuleJSON    string        `json:"rule_json"`
 	Conditions  []string      `json:"conditions,omitempty"`
 	Actions     []AlertAction `json:"actions,omitempty"`
 }
 
-func (c *AlertRuleService) CreateAlertRule(team_id, service_id, integration_id string, rule *AlertRule) (*AlertRule, error) {
-	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/", team_id, service_id, integration_id)
+func (c *AlertRuleService) CreateAlertRule(teamID, serviceID, integrationID string, rule *AlertRule) (*AlertRule, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/", teamID, serviceID, integrationID)
 	body, err := c.client.newRequestDo("POST", path, rule)
 	if err != nil {
 		return nil, err
@@ -44,9 +44,9 @@ func (c *AlertRuleService) CreateAlertRule(team_id, service_id, integration_id s
 	return &s, nil
 }
 
-func (c *AlertRuleService) GetAlertRules(team_id, service_id, integration_id string) ([]AlertRule, error) {
+func (c *AlertRuleService) GetAlertRules(teamID, serviceID, integrationID string) ([]AlertRule, error) {
 
-	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/", team_id, service_id, integration_id)
+	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/", teamID, serviceID, integrationID)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
@@ -59,8 +59,8 @@ func (c *AlertRuleService) GetAlertRules(team_id, service_id, integration_id str
 	return s, nil
 }
 
-func (c *AlertRuleService) GetAlertRule(team_id, service_id, integration_id, id string) (*AlertRule, error) {
-	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/%s/", team_id, service_id, integration_id, id)
+func (c *AlertRuleService) GetAlertRule(teamID, serviceID, integrationID, id string) (*AlertRule, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/%s/", teamID, serviceID, integrationID, id)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
@@ -73,8 +73,8 @@ func (c *AlertRuleService) GetAlertRule(team_id, service_id, integration_id, id 
 	return &s, nil
 }
 
-func (c *AlertRuleService) UpdateAlertRule(team_id, service_id, integration_id, id string, rule *AlertRule) (*AlertRule, error) {
-	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/%s/", team_id, service_id, integration_id, id)
+func (c *AlertRuleService) UpdateAlertRule(teamID, serviceID, integrationID, id string, rule *AlertRule) (*AlertRule, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/%s/", teamID, serviceID, integrationID, id)
 	body, err := c.client.newRequestDo("PUT", path, rule)
 	if err != nil {
 		return nil, err
@@ -87,8 +87,8 @@ func (c *AlertRuleService) UpdateAlertRule(team_id, service_id, integration_id, 
 	return &s, nil
 }
 
-func (c *AlertRuleService) DeleteAlertRule(team_id, service_id, integration_id, id string) error {
-	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/%s/", team_id, service_id, integration_id, id)
+func (c *AlertRuleService) DeleteAlertRule(teamID, serviceID, integrationID, id string) error {
+	path := fmt.Sprintf("/api/account/teams/%s/services/%s/integrations/%s/transformers/%s/", teamID, serviceID, integrationID, id)
 	_, err := c.client.newRequestDo("DELETE", path, nil)
 	if err != nil {
 		return err

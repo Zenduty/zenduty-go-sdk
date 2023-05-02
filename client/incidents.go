@@ -16,54 +16,54 @@ type Incident struct {
 	Summary          string `json:"summary"`
 }
 
-type service_object struct {
-	Name                   string `json:"name"`
-	Creation_Date          string `json:"creation_date"`
-	Summary                string `json:"summary"`
-	Description            string `json:"description"`
-	Unique_Id              string `json:"unique_id"`
-	Auto_Resolve_Timeouts  int    `json:"auto_resolve_timeout"`
-	Created_By             string `json:"created_by"`
-	Team_Priority          string `json:"team_priority"`
-	Task_Template          string `json:"task_template"`
-	Acknowledgment_Timeout int    `json:"acknowledge_timeout"`
-	Status                 int    `json:"status"`
-	EscalationPolicy       string `json:"escalation_policy"`
-	Team                   string `json:"team"`
-	Sla                    string `json:"sla"`
-	Collation_Time         int    `json:"collation_time"`
-	Collation              int    `json:"collation"`
+type serviceObject struct {
+	Name                  string `json:"name"`
+	CreationDate          string `json:"creation_date"`
+	Summary               string `json:"summary"`
+	Description           string `json:"description"`
+	UniqueID              string `json:"unique_id"`
+	AutoResolveTimeouts   int    `json:"auto_resolve_timeout"`
+	CreatedBy             string `json:"created_by"`
+	TeamPriority          string `json:"team_priority"`
+	TaskTemplate          string `json:"task_template"`
+	AcknowledgmentTimeout int    `json:"acknowledge_timeout"`
+	Status                int    `json:"status"`
+	EscalationPolicy      string `json:"escalation_policy"`
+	Team                  string `json:"team"`
+	SLA                   string `json:"sla"`
+	CollationTime         int    `json:"collation_time"`
+	Collation             int    `json:"collation"`
 }
 
-type escalation_policy_object struct {
-	Unique_Id string `json:"unique_id"`
-	Name      string `json:"name"`
+type escalationPolicyObject struct {
+	UniqueID string `json:"unique_id"`
+	Name     string `json:"name"`
 }
 
 type Incidents struct {
-	Summary                  string `json:"summary"`
-	Incident_Number          int    `json:"incident_number"`
-	Creation_Date            string `json:"creation_date"`
-	Status                   int    `json:"status"`
-	Unique_Id                string `json:"unique_id"`
-	Service_Object           service_object
-	Title                    string                   `json:"title"`
-	Incident_Key             string                   `json:"incident_key"`
-	Service                  string                   `json:"service"`
-	Urgency                  int                      `json:"urgency"`
-	Merged_With              string                   `json:"merged_with"`
-	Assigned_To              string                   `json:"assigned_to"`
-	Escalation_Policy        string                   `json:"escalation_policy"`
-	Escalation_Policy_Object escalation_policy_object `json:"escalation_policy_object"`
-	Assigned_to_name         string                   `json:"assigned_to_name"`
-	Resolved_Date            string                   `json:"resolved_date"`
-	Acknowledged_Date        string                   `json:"acknowledged_date"`
-	Context_Window_start     string                   `json:"context_window_start"`
-	Context_Window_end       string                   `json:"context_window_end"`
-	Tags                     []IncidentTag            `json:"tags"`
-	Sla                      string                   `json:"sla"`
-	Team_Priority            string                   `json:"team_priority"`
-	Team_Priority_Object     string                   `json:"team_priority_object"`
+	Summary                string `json:"summary"`
+	IncidentNumber         int    `json:"incident_number"`
+	CreationDate           string `json:"creation_date"`
+	Status                 int    `json:"status"`
+	UniqueID               string `json:"unique_id"`
+	ServiceObject          serviceObject
+	Title                  string                 `json:"title"`
+	IncidentKey            string                 `json:"incident_key"`
+	Service                string                 `json:"service"`
+	Urgency                int                    `json:"urgency"`
+	MergedWith             string                 `json:"merged_with"`
+	AssignedTo             string                 `json:"assigned_to"`
+	EscalationPolicy       string                 `json:"escalation_policy"`
+	EscalationPolicyObject escalationPolicyObject `json:"escalationPolicyObject"`
+	AssignedToName         string                 `json:"assigned_to_name"`
+	ResolvedDate           string                 `json:"resolved_date"`
+	AcknowledgedDate       string                 `json:"acknowledged_date"`
+	ContextWindowStart     string                 `json:"context_window_start"`
+	ContextWindowEnd       string                 `json:"context_window_end"`
+	Tags                   []IncidentTag          `json:"tags"`
+	SLA                    string                 `json:"sla"`
+	TeamPriority           string                 `json:"team_priority"`
+	TeamPriorityObject     string                 `json:"team_priority_object"`
 }
 
 type IncidentPagination struct {
@@ -100,7 +100,7 @@ type IncidentTag struct {
 	Name         string `json:"name"`
 	Incident     int    `json:"incident"`
 	CreationDate string `json:"creation_date"`
-	TagID        string `json:"tag_id"`
+	TagID        string `json:"tagID"`
 	Color        string `json:"color"`
 }
 

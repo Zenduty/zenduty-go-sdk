@@ -6,7 +6,7 @@ import (
 )
 
 type GlobalRoutingRuleAction struct {
-	UniqueId    string `json:"unique_id,omitempty"`
+	UniqueID    string `json:"unique_id,omitempty"`
 	ActionType  int    `json:"action_type"`
 	Integration string `json:"integration,omitempty"`
 }
@@ -14,11 +14,11 @@ type GlobalRoutingRuleAction struct {
 // action := client.GlobalRoutingRuleAction{ ActionType:  1}
 
 type GlobalRoutingRule struct {
-	Unique_Id string                    `json:"unique_id,omitempty"`
-	Name      string                    `json:"name"`
-	Position  int                       `json:"position,omitempty"`
-	RuleJson  string                    `json:"rule_json"`
-	Actions   []GlobalRoutingRuleAction `json:"actions"` // []client.GlobalRoutingRuleAction{action}
+	UniqueID string                    `json:"unique_id,omitempty"`
+	Name     string                    `json:"name"`
+	Position int                       `json:"position,omitempty"`
+	RuleJSON string                    `json:"rule_json"`
+	Actions  []GlobalRoutingRuleAction `json:"actions"` // []client.GlobalRoutingRuleAction{action}
 }
 
 func (c *GlobalRouterService) CreateGlobalRoutingRule(routerID string, rule *GlobalRoutingRule) (*GlobalRoutingRule, error) {

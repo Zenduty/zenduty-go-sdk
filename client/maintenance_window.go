@@ -21,7 +21,7 @@ type MaintenanceWindow struct {
 	EndTime        string               `json:"end_time"`
 	TimeZone       string               `json:"time_zone"`
 	Services       []ServiceMaintenance `json:"services"`
-	Creation_Date  string               `json:"creation_date"`
+	CreationDate   string               `json:"creation_date"`
 }
 
 func (c *MaintenanceWindowService) CreateMaintenanceWindow(team string, maintenance *MaintenanceWindow) (*MaintenanceWindow, error) {
@@ -38,8 +38,8 @@ func (c *MaintenanceWindowService) CreateMaintenanceWindow(team string, maintena
 	return &s, nil
 }
 
-func (c *MaintenanceWindowService) UpdateMaintenanceWindow(team string, maintenance_id string, maintenance *MaintenanceWindow) (*MaintenanceWindow, error) {
-	path := fmt.Sprintf("/api/account/teams/%s/maintenance/%s/", team, maintenance_id)
+func (c *MaintenanceWindowService) UpdateMaintenanceWindow(team string, maintenanceID string, maintenance *MaintenanceWindow) (*MaintenanceWindow, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/maintenance/%s/", team, maintenanceID)
 	body, err := c.client.newRequestDo("PUT", path, maintenance)
 	if err != nil {
 		return nil, err
@@ -66,8 +66,8 @@ func (c *MaintenanceWindowService) GetMaintenanceWindows(team string) ([]Mainten
 	return s, nil
 }
 
-func (c *MaintenanceWindowService) DeleteMaintenanceWindow(team string, maintenance_id string) error {
-	path := fmt.Sprintf("/api/account/teams/%s/maintenance/%s/", team, maintenance_id)
+func (c *MaintenanceWindowService) DeleteMaintenanceWindow(team string, maintenanceID string) error {
+	path := fmt.Sprintf("/api/account/teams/%s/maintenance/%s/", team, maintenanceID)
 	_, err := c.client.newRequestDo("DELETE", path, nil)
 	if err != nil {
 		return err
@@ -75,8 +75,8 @@ func (c *MaintenanceWindowService) DeleteMaintenanceWindow(team string, maintena
 	return nil
 }
 
-func (c *MaintenanceWindowService) GetMaintenanceWindowById(team string, maintenance_id string) (*MaintenanceWindow, error) {
-	path := fmt.Sprintf("/api/account/teams/%s/maintenance/%s/", team, maintenance_id)
+func (c *MaintenanceWindowService) GetMaintenanceWindowByID(team string, maintenanceID string) (*MaintenanceWindow, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/maintenance/%s/", team, maintenanceID)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err

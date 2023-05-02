@@ -7,19 +7,17 @@ import (
 
 type AccountRoleService service
 
-
 type AccountRole struct {
-	Name string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
+	Name        string   `json:"name,omitempty"`
+	Description string   `json:"description,omitempty"`
 	Permissions []string `json:"permissions,omitempty"`
-	UniqueID  string `json:"unique_id,omitempty"`
+	UniqueID    string   `json:"unique_id,omitempty"`
 }
 
 type AddRoleToUser struct {
 	AccountRole *string `json:"custom_role"`
-	Username string `json:"user,omitempty"`
+	Username    string  `json:"user,omitempty"`
 }
-
 
 func (c *AccountRoleService) CreateAccountRole(role *AccountRole) (*AccountRole, error) {
 	path := "/api/account/customroles/"
@@ -35,8 +33,8 @@ func (c *AccountRoleService) CreateAccountRole(role *AccountRole) (*AccountRole,
 	return &r, nil
 }
 
-func (c *AccountRoleService) UpdateAccountRole(unique_id string,role *AccountRole) (*AccountRole, error) {
-	path := fmt.Sprintf("/api/account/customroles/%s/", unique_id)
+func (c *AccountRoleService) UpdateAccountRole(UniqueID string, role *AccountRole) (*AccountRole, error) {
+	path := fmt.Sprintf("/api/account/customroles/%s/", UniqueID)
 	body, err := c.client.newRequestDo("PUT", path, role)
 	if err != nil {
 		return nil, err
@@ -48,7 +46,7 @@ func (c *AccountRoleService) UpdateAccountRole(unique_id string,role *AccountRol
 	}
 	return &r, nil
 }
-func (c *AccountRoleService) DeleteAccountRole(id string)  error{
+func (c *AccountRoleService) DeleteAccountRole(id string) error {
 	path := fmt.Sprintf("/api/account/customroles/%s/", id)
 	_, err := c.client.newRequestDo("DELETE", path, nil)
 	if err != nil {
@@ -57,8 +55,7 @@ func (c *AccountRoleService) DeleteAccountRole(id string)  error{
 	return nil
 }
 
-
-func (c *AccountRoleService) GetAccountRoleById(id string) (*AccountRole, error) {
+func (c *AccountRoleService) GetAccountRoleByID(id string) (*AccountRole, error) {
 	path := fmt.Sprintf("/api/account/customroles/%s/", id)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {

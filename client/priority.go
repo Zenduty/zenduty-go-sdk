@@ -8,21 +8,21 @@ import (
 type PriorityService service
 
 type Priority struct {
-	Unique_Id     string `json:"unique_id,omitempty"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	Color         string `json:"color"`
-	Team          int    `json:"team,omitempty"`
-	Creation_Date string `json:"creation_date,omitempty"`
+	UniqueID     string `json:"unique_id,omitempty"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Color        string `json:"color"`
+	Team         int    `json:"team,omitempty"`
+	CreationDate string `json:"creation_date,omitempty"`
 }
 
 type ReadPriority struct {
-	Unique_Id     string `json:"unique_id,omitempty"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	Color         string `json:"color"`
-	Team          string `json:"team,omitempty"`
-	Creation_Date string `json:"creation_date,omitempty"`
+	UniqueID     string `json:"unique_id,omitempty"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Color        string `json:"color"`
+	Team         string `json:"team,omitempty"`
+	CreationDate string `json:"creation_date,omitempty"`
 }
 
 func (c *PriorityService) CreatePriority(team string, priority *Priority) (*Priority, error) {
@@ -53,7 +53,7 @@ func (c *PriorityService) GetPriority(team string) ([]ReadPriority, error) {
 	return s, nil
 }
 
-func (c *PriorityService) GetPriorityById(team, id string) (*ReadPriority, error) {
+func (c *PriorityService) GetPriorityByID(team, id string) (*ReadPriority, error) {
 	path := fmt.Sprintf("/api/account/teams/%s/priority/%s/", team, id)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {

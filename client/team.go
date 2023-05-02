@@ -8,32 +8,32 @@ import (
 type TeamService service
 
 type User struct {
-	Username   string `json:"username"`
-	First_Name string `json:"first_name"`
-	Last_Name  string `json:"last_name"`
-	Email      string `json:"email"`
+	Username  string `json:"username"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
 }
 
 type members struct {
-	Unique_Id    string `json:"unique_id"`
-	Team         string `json:"team"`
-	User         User   `json:"user"`
-	Joining_Date string `json:"joining_date"`
-	Role         int    `json:"role"`
+	UniqueID    string `json:"unique_id"`
+	Team        string `json:"team"`
+	User        User   `json:"user"`
+	JoiningDate string `json:"joining_date"`
+	Role        int    `json:"role"`
 }
 
 type CreateTeams struct {
-	Name      string `json:"name"`
-	Unique_Id string `json:"unique_id,omitempty"`
+	Name     string `json:"name"`
+	UniqueID string `json:"unique_id,omitempty"`
 }
 type Team struct {
-	Unique_Id     string    `json:"unique_id"`
-	Name          string    `json:"name"`
-	Account       string    `json:"account"`
-	Creation_Date string    `json:"creation_date"`
-	Owner         string    `json:"owner"`
-	Roles         []Roles   `json:"roles"`
-	Members       []members `json:"members"`
+	UniqueID     string    `json:"unique_id"`
+	Name         string    `json:"name"`
+	Account      string    `json:"account"`
+	CreationDate string    `json:"creation_date"`
+	Owner        string    `json:"owner"`
+	Roles        []Roles   `json:"roles"`
+	Members      []members `json:"members"`
 }
 
 func (c *TeamService) CreateTeam(team *CreateTeams) (*Team, error) {
@@ -65,8 +65,8 @@ func (c *TeamService) UpdateTeam(id string, team *CreateTeams) (*Team, error) {
 	return &t, nil
 }
 
-func (c *TeamService) GetTeamById(uniqie_id string) (*Team, error) {
-	path := fmt.Sprintf("/api/account/teams/%s/", uniqie_id)
+func (c *TeamService) GetTeamByID(uniqieID string) (*Team, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/", uniqieID)
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
