@@ -5,10 +5,15 @@ import (
 	"fmt"
 )
 
+type GlobalRoutingRuleIntegrationObject struct {
+	Name     string `json:"name"`
+	UniqueID string `json:"unique_id"`
+}
 type GlobalRoutingRuleAction struct {
-	UniqueID    string `json:"unique_id,omitempty"`
-	ActionType  int    `json:"action_type"`
-	Integration string `json:"integration,omitempty"`
+	UniqueID          string                             `json:"unique_id,omitempty"`
+	ActionType        int                                `json:"action_type"`
+	Integration       string                             `json:"integration,omitempty"`
+	IntegrationObject GlobalRoutingRuleIntegrationObject `json:"integration_obj,omitempty"`
 }
 
 // action := client.GlobalRoutingRuleAction{ ActionType:  1}
