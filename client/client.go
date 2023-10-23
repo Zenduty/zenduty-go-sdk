@@ -46,6 +46,8 @@ type Client struct {
 	AccountRole       *AccountRoleService
 	GlobalRouter      *GlobalRouterService
 	Events            *EventsService
+	Sla               *SLAService
+	PostIncidentTask  *PostIncidentTaskService
 }
 
 type Response struct {
@@ -91,6 +93,8 @@ func NewClient(config *Config) (*Client, error) {
 	c.AccountRole = &AccountRoleService{c}
 	c.GlobalRouter = &GlobalRouterService{c}
 	c.Events = &EventsService{c}
+	c.Sla = &SLAService{c}
+	c.PostIncidentTask = &PostIncidentTaskService{c}
 	return c, nil
 
 }
