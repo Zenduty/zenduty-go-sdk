@@ -48,6 +48,7 @@ type Client struct {
 	Events            *EventsService
 	Sla               *SLAService
 	PostIncidentTask  *PostIncidentTaskService
+	TaskTemplate      *TaskTemplateService
 }
 
 type Response struct {
@@ -95,6 +96,7 @@ func NewClient(config *Config) (*Client, error) {
 	c.Events = &EventsService{c}
 	c.Sla = &SLAService{c}
 	c.PostIncidentTask = &PostIncidentTaskService{c}
+	c.TaskTemplate = &TaskTemplateService{c}
 	return c, nil
 
 }
