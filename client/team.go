@@ -35,6 +35,10 @@ type Team struct {
 	Roles        []Roles   `json:"roles"`
 	Members      []members `json:"members"`
 }
+type TeamLevelPermissions struct {
+	UniqueID    string   `json:"unique_id"`
+	Permissions []string `json:"account_permissions"`
+}
 
 func (c *TeamService) CreateTeam(team *CreateTeams) (*Team, error) {
 	path := "/api/account/teams/"
@@ -101,4 +105,32 @@ func (c *TeamService) DeleteTeam(id string) error {
 		return err
 	}
 	return nil
+}
+
+func (c *TeamService) GetTeamLevelPermissions(uniqieID string) (*TeamLevelPermissions, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/permissions/", uniqieID)
+	body, err := c.client.newRequestDo("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+	var t TeamLevelPermissions
+	err = json.Unmarshal(body.BodyBytes, &t)
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
+}
+
+func (c *TeamService) UpdateTeamLevelPermissions(uniqieID string, newPermissions *TeamLevelPermissions) (*TeamLevelPermissions, error) {
+	path := fmt.Sprintf("/api/account/teams/%s/permissions/", uniqieID)
+	body, err := c.client.newRequestDo("PUT", path, newPermissions)
+	if err != nil {
+		return nil, err
+	}
+	var t TeamLevelPermissions
+	err = json.Unmarshal(body.BodyBytes, &t)
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
 }
