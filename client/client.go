@@ -49,6 +49,7 @@ type Client struct {
 	Sla               *SLAService
 	PostIncidentTask  *PostIncidentTaskService
 	TaskTemplate      *TaskTemplateService
+	OutgoingRules     *OutgoingRulesService
 }
 
 type Response struct {
@@ -97,6 +98,7 @@ func NewClient(config *Config) (*Client, error) {
 	c.Sla = &SLAService{c}
 	c.PostIncidentTask = &PostIncidentTaskService{c}
 	c.TaskTemplate = &TaskTemplateService{c}
+	c.OutgoingRules = &OutgoingRulesService{c}
 	return c, nil
 
 }
