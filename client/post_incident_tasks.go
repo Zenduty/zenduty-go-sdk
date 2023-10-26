@@ -19,9 +19,9 @@ type PostIncidentTaskObj struct {
 	Description   string        `json:"description"`
 	Team          string        `json:"team,omitempty"`
 	Status        int           `json:"status"`
-	DueInTime     string        `json:"due_in_time"`
+	DueInTime     *string       `json:"due_in_time"`
 	CreationDate  string        `json:"creation_date,omitempty"`
-	AssignedTo    string        `json:"assigned_to"`
+	AssignedTo    string        `json:"assigned_to,omitempty"`
 	AssignedToObj AssignedToObj `json:"assigned_to_obj"`
 }
 
