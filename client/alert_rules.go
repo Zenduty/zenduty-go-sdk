@@ -16,7 +16,9 @@ type AlertAction struct {
 	EscalationPolicy string `json:"escalation_policy"`
 	Schedule         string `json:"schedule"`
 	TeamPriority     string `json:"team_priority"`
-	SLA              string `json:"sla"`
+	TaskTemplates    string `json:"task_template"`
+
+	SLA string `json:"sla"`
 }
 
 type AlertRule struct {
