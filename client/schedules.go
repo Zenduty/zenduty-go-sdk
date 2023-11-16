@@ -47,7 +47,7 @@ type CreateLayers struct {
 	ShiftLength       int               `json:"shift_length"`
 	Name              string            `json:"name"`
 	RotationStartTime string            `json:"rotation_start_time"`
-	RotationEndTime   string            `json:"rotation_end_time"`
+	RotationEndTime   string            `json:"rotation_end_time,omitempty"`
 	RestrictionType   int               `json:"restriction_type,omitempty"`
 	Users             []CreateUserLayer `json:"users"`
 	Restrictions      []Restrictions    `json:"restrictions"`
