@@ -11,7 +11,7 @@ type Priority struct {
 	UniqueID     string `json:"unique_id,omitempty"`
 	Name         string `json:"name"`
 	Description  string `json:"description"`
-	Color        string `json:"color"`
+	Color        string `json:"color,omitempty"`
 	Team         int    `json:"team,omitempty"`
 	CreationDate string `json:"creation_date,omitempty"`
 }

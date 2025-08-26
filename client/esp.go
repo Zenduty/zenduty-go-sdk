@@ -9,6 +9,7 @@ type EspService service
 type Targets struct {
 	TargetType int    `json:"target_type"`
 	TargetID   string `json:"target_id"`
+	Position   int    `json:"position"`
 }
 type Rules struct {
 	Delay    int       `json:"delay"`
