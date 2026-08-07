@@ -45,8 +45,8 @@ type Incidents struct {
 	IncidentNumber         int    `json:"incident_number"`
 	CreationDate           string `json:"creation_date"`
 	Status                 int    `json:"status"`
-	UniqueID               string `json:"unique_id"`
-	ServiceObject          serviceObject
+	UniqueID               string                 `json:"unique_id"`
+	ServiceObject          serviceObject          `json:"service_object"`
 	Title                  string                 `json:"title"`
 	IncidentKey            string                 `json:"incident_key"`
 	Service                string                 `json:"service"`
