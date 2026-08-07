@@ -7,8 +7,11 @@ import (
 
 type SLAService service
 
+// ResponderUser is a single SLA escalation responder: exactly one of User
+// (a username) or Schedule (a schedule unique_id) should be set.
 type ResponderUser struct {
-	User     string `json:"user"`
+	User     string `json:"user,omitempty"`
+	Schedule string `json:"schedule,omitempty"`
 	UniqueID string `json:"unique_id,omitempty"`
 }
 
@@ -23,6 +26,7 @@ type SLAObj struct {
 	UniqueID        string           `json:"unique_id,omitempty"`
 	Name            string           `json:"name"`
 	Description     string           `json:"description"`
+	Conditions      string           `json:"conditions,omitempty"`
 	AcknowledgeTime int              `json:"acknowledge_time"`
 	IsActive        bool             `json:"is_active"`
 	ResolveTime     int              `json:"resolve_time,omitempty"`
@@ -33,6 +37,7 @@ type SLAs struct {
 	UniqueID        string `json:"unique_id"`
 	Name            string `json:"name"`
 	Description     string `json:"description"`
+	Conditions      string `json:"conditions,omitempty"`
 	AcknowledgeTime int    `json:"acknowledge_time"`
 	IsActive        bool   `json:"is_active"`
 	ResolveTime     int    `json:"resolve_time"`

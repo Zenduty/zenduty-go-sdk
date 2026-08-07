@@ -23,7 +23,7 @@ type TaskTemplateTaskObj struct {
 	DueIn        int    `json:"due_in"`
 	CreationDate string `json:"creation_date,omitempty"`
 	Role         string `json:"role"`
-	Positon      int    `json:"position,omitempty"`
+	Position     int    `json:"position,omitempty"`
 }
 
 func (c *TaskTemplateService) CreateTaskTemplate(team string, tasktemplare *TaskTemplateObj) (*TaskTemplateObj, error) {

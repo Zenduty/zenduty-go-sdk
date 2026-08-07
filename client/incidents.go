@@ -14,6 +14,7 @@ type Incident struct {
 	User             string `json:"user"`
 	Title            string `json:"title"`
 	Summary          string `json:"summary"`
+	Urgency          *int   `json:"urgency,omitempty"`
 }
 
 type serviceObject struct {
@@ -41,10 +42,10 @@ type escalationPolicyObject struct {
 }
 
 type Incidents struct {
-	Summary                string `json:"summary"`
-	IncidentNumber         int    `json:"incident_number"`
-	CreationDate           string `json:"creation_date"`
-	Status                 int    `json:"status"`
+	Summary                string                 `json:"summary"`
+	IncidentNumber         int                    `json:"incident_number"`
+	CreationDate           string                 `json:"creation_date"`
+	Status                 int                    `json:"status"`
 	UniqueID               string                 `json:"unique_id"`
 	ServiceObject          serviceObject          `json:"service_object"`
 	Title                  string                 `json:"title"`
@@ -73,8 +74,11 @@ type IncidentPagination struct {
 	Count    int         `json:"count"`
 }
 
+// IncidentStatus is the PATCH payload for incident updates. Urgency is a
+// pointer because 0 (low) is a valid value that must survive serialization.
 type IncidentStatus struct {
-	Status int `json:"status"`
+	Status  int  `json:"status,omitempty"`
+	Urgency *int `json:"urgency,omitempty"`
 }
 type AddIncidentNote struct {
 	Note string `json:"note"`
@@ -282,6 +286,12 @@ func (c *IncidentService) DeleteIncidentTag(incidentNumber, tagID string) error 
 	return nil
 }
 
+// GetIncidentAlerts returns the alerts attached to an incident.
+func (c *IncidentService) GetIncidentAlerts(incidentNumber string) (*IncidentAlerts, error) {
+	return c.GetIncientAlerts(incidentNumber)
+}
+
+// Deprecated: misspelling kept for backwards compatibility; use GetIncidentAlerts.
 func (c *IncidentService) GetIncientAlerts(incidentNumber string) (*IncidentAlerts, error) {
 
 	path := fmt.Sprintf("/api/incidents/%s/alerts/", incidentNumber)

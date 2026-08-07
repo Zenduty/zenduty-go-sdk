@@ -21,15 +21,26 @@ type AlertAction struct {
 	SLA string `json:"sla"`
 }
 
+// AlertRuleCondition mirrors the backend AlertTransformerConditionSerializer:
+// (unique_id, alert_condition_type, alert_field, pattern, position).
+type AlertRuleCondition struct {
+	UniqueID           string `json:"unique_id,omitempty"`
+	AlertConditionType int    `json:"alert_condition_type"`
+	AlertField         string `json:"alert_field"`
+	Pattern            string `json:"pattern"`
+	Position           int    `json:"position,omitempty"`
+}
+
 type AlertRule struct {
-	UniqueID    string        `json:"unique_id"`
-	Description string        `json:"description"`
-	Position    int           `json:"position,omitempty"`
-	Stop        bool          `json:"stop,omitempty"`
-	RuleType    int           `json:"ruleType,omitempty"`
-	RuleJSON    string        `json:"rule_json"`
-	Conditions  []string      `json:"conditions,omitempty"`
-	Actions     []AlertAction `json:"actions,omitempty"`
+	UniqueID    string               `json:"unique_id"`
+	Description string               `json:"description"`
+	Position    int                  `json:"position,omitempty"`
+	Stop        bool                 `json:"stop,omitempty"`
+	RuleType    int                  `json:"rule_type,omitempty"`
+	IsEnabled   *bool                `json:"is_enabled,omitempty"`
+	RuleJSON    string               `json:"rule_json"`
+	Conditions  []AlertRuleCondition `json:"conditions,omitempty"`
+	Actions     []AlertAction        `json:"actions,omitempty"`
 }
 
 func (c *AlertRuleService) CreateAlertRule(teamID, serviceID, integrationID string, rule *AlertRule) (*AlertRule, error) {
