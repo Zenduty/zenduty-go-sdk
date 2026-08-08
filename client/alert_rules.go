@@ -32,15 +32,20 @@ type AlertRuleCondition struct {
 }
 
 type AlertRule struct {
-	UniqueID    string               `json:"unique_id"`
-	Description string               `json:"description"`
-	Position    int                  `json:"position,omitempty"`
-	Stop        bool                 `json:"stop,omitempty"`
-	RuleType    int                  `json:"rule_type,omitempty"`
-	IsEnabled   *bool                `json:"is_enabled,omitempty"`
-	RuleJSON    string               `json:"rule_json"`
-	Conditions  []AlertRuleCondition `json:"conditions,omitempty"`
-	Actions     []AlertAction        `json:"actions,omitempty"`
+	UniqueID    string `json:"unique_id"`
+	Description string `json:"description"`
+	// Position is 1-based server-side (model default 1), so omitempty
+	// correctly means "let the server assign it".
+	Position int `json:"position,omitempty"`
+	// Stop and RuleType must NOT use omitempty: false and 0 are both
+	// meaningful values, and dropping them makes it impossible to switch
+	// back once the opposite value is stored.
+	Stop       bool                 `json:"stop"`
+	RuleType   int                  `json:"rule_type"`
+	IsEnabled  *bool                `json:"is_enabled,omitempty"`
+	RuleJSON   string               `json:"rule_json"`
+	Conditions []AlertRuleCondition `json:"conditions,omitempty"`
+	Actions    []AlertAction        `json:"actions,omitempty"`
 }
 
 func (c *AlertRuleService) CreateAlertRule(teamID, serviceID, integrationID string, rule *AlertRule) (*AlertRule, error) {

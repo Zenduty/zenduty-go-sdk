@@ -23,24 +23,28 @@ type SLAEscalations struct {
 }
 
 type SLAObj struct {
-	UniqueID        string           `json:"unique_id,omitempty"`
-	Name            string           `json:"name"`
-	Description     string           `json:"description"`
-	Conditions      string           `json:"conditions,omitempty"`
+	UniqueID    string `json:"unique_id,omitempty"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	// No omitempty: clearing conditions has to reach the server, which
+	// stores "{}" as the empty value.
+	Conditions      string           `json:"conditions"`
 	AcknowledgeTime int              `json:"acknowledge_time"`
 	IsActive        bool             `json:"is_active"`
 	ResolveTime     int              `json:"resolve_time,omitempty"`
 	Escalations     []SLAEscalations `json:"escalations"`
 }
 
+// SLAs is the list-endpoint representation. TeamSLAListSerializer returns only
+// these fields — notably not description or conditions, which are available
+// from GetSLAByID.
 type SLAs struct {
 	UniqueID        string `json:"unique_id"`
 	Name            string `json:"name"`
-	Description     string `json:"description"`
-	Conditions      string `json:"conditions,omitempty"`
 	AcknowledgeTime int    `json:"acknowledge_time"`
 	IsActive        bool   `json:"is_active"`
 	ResolveTime     int    `json:"resolve_time"`
+	CreationDate    string `json:"creation_date"`
 }
 
 func (c *SLAService) CreateSLA(team string, sla *SLAObj) (*SLAObj, error) {
