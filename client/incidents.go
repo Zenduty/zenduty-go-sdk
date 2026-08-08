@@ -27,7 +27,7 @@ type serviceObject struct {
 	CreatedBy             string `json:"created_by"`
 	TeamPriority          string `json:"team_priority"`
 	TaskTemplate          string `json:"task_template"`
-	AcknowledgmentTimeout int    `json:"acknowledge_timeout"`
+	AcknowledgmentTimeout int    `json:"acknowledgement_timeout"`
 	Status                int    `json:"status"`
 	EscalationPolicy      string `json:"escalation_policy"`
 	Team                  string `json:"team"`
