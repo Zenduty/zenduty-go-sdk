@@ -104,7 +104,12 @@ func NewClient(config *Config) (*Client, error) {
 }
 
 func (c *Client) newRequest(method, path string, body interface{}) (*http.Request, error) {
-	rel := &url.URL{Path: path}
+	// url.Parse (rather than url.URL{Path: path}) keeps query strings like
+	// "?page=2" intact instead of escaping them into the path.
+	rel, err := url.Parse(path)
+	if err != nil {
+		return nil, err
+	}
 	u := c.baseURL.ResolveReference(rel)
 
 	var buf []byte
@@ -174,9 +179,15 @@ func (c *Client) checkResponse(res *Response) error {
 func (c *Client) decodeErrorResponse(res *Response) error {
 
 	v := &errorResponse{Error: &Error{ErrorResponse: res, Code: res.Response.StatusCode}}
-	if err := c.DecodeJSON(res, v); err != nil {
-
-		return fmt.Errorf("%s APIs call to %s failed: %v error: %s", res.Response.Request.Method, res.Response.Request.URL.String(), res.Response.Status, string(res.BodyBytes))
+	// Fall back to a bare *Error when the body is not JSON, is not an object
+	// (e.g. {"error": "text"}), or explicitly nulls the error key — every
+	// non-2xx response must yield a typed *Error carrying the status code.
+	if err := c.DecodeJSON(res, v); err != nil || v.Error == nil {
+		return &Error{
+			ErrorResponse: res,
+			Code:          res.Response.StatusCode,
+			Message:       string(res.BodyBytes),
+		}
 	}
 
 	return v.Error

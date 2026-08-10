@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 )
 
 type IncidentService service
@@ -148,8 +149,32 @@ func (c *IncidentService) UpdateIncident(incidentNumber string, incident *Incide
 	return &i, nil
 }
 
-func (c *IncidentService) GetIncidents() (*IncidentPagination, error) {
+// ListIncidentsOptions are the server-side query parameters accepted by the
+// incidents list endpoint. The endpoint pages 10 results at a time.
+type ListIncidentsOptions struct {
+	// Page is the 1-based page number; 0 and 1 both fetch the first page.
+	Page int
+	// Status filters server-side: 0 all, -1 open (triggered + acknowledged),
+	// 1 triggered, 2 acknowledged, 3 resolved.
+	Status int
+}
+
+// ListIncidents fetches one page of incidents. Follow pagination by
+// incrementing opts.Page until the response's Next field is empty.
+func (c *IncidentService) ListIncidents(opts *ListIncidentsOptions) (*IncidentPagination, error) {
 	path := "/api/incidents/"
+	q := url.Values{}
+	if opts != nil {
+		if opts.Page > 1 {
+			q.Set("page", strconv.Itoa(opts.Page))
+		}
+		if opts.Status != 0 {
+			q.Set("status", strconv.Itoa(opts.Status))
+		}
+	}
+	if len(q) > 0 {
+		path += "?" + q.Encode()
+	}
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
@@ -160,6 +185,11 @@ func (c *IncidentService) GetIncidents() (*IncidentPagination, error) {
 		return nil, err
 	}
 	return &i, nil
+}
+
+// GetIncidents fetches the first page of incidents.
+func (c *IncidentService) GetIncidents() (*IncidentPagination, error) {
+	return c.ListIncidents(nil)
 }
 
 func (c *IncidentService) GetIncidentByNumber(incidentNumber string) (*Incidents, error) {
@@ -206,11 +236,19 @@ func (c *IncidentService) UpdateIncidentNote(incidentNumber, noteID string, note
 	return &i, nil
 }
 
+// GetIncidentNotes fetches the first page of an incident's notes.
 func (c *IncidentService) GetIncidentNotes(incidentNumber string) (*IncidentNotes, error) {
-	path := &url.URL{
-		Path: fmt.Sprintf("/api/incidents/%s/note/", incidentNumber),
+	return c.GetIncidentNotesPage(incidentNumber, 1)
+}
+
+// GetIncidentNotesPage fetches one page (10 notes) of an incident's notes.
+// page is 1-based; 0 and 1 both fetch the first page.
+func (c *IncidentService) GetIncidentNotesPage(incidentNumber string, page int) (*IncidentNotes, error) {
+	path := fmt.Sprintf("/api/incidents/%s/note/", incidentNumber)
+	if page > 1 {
+		path += "?page=" + strconv.Itoa(page)
 	}
-	body, err := c.client.newRequestDo("GET", path.String(), nil)
+	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +258,22 @@ func (c *IncidentService) GetIncidentNotes(incidentNumber string) (*IncidentNote
 		return nil, err
 	}
 	return &i, nil
+}
 
+// GetAllIncidentNotes follows pagination and returns every note on the
+// incident.
+func (c *IncidentService) GetAllIncidentNotes(incidentNumber string) ([]IncidentNote, error) {
+	var notes []IncidentNote
+	for page := 1; ; page++ {
+		p, err := c.GetIncidentNotesPage(incidentNumber, page)
+		if err != nil {
+			return nil, err
+		}
+		notes = append(notes, p.Results...)
+		if p.Next == "" || len(p.Results) == 0 {
+			return notes, nil
+		}
+	}
 }
 
 func (c *IncidentService) DeleteIncidentNote(incidentNumber, noteID string) error {

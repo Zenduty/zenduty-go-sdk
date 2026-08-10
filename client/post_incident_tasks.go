@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 type PostIncidentTaskService service
@@ -47,8 +48,18 @@ func (c *PostIncidentTaskService) CreatePostIncidentTask(team string, postincide
 	return &s, nil
 }
 
+// GetPostIncidentTasks fetches the first page of a team's post-incident tasks.
 func (c *PostIncidentTaskService) GetPostIncidentTasks(team string) (*PostIncidentTaskPagination, error) {
+	return c.GetPostIncidentTasksPage(team, 1)
+}
+
+// GetPostIncidentTasksPage fetches one page (10 tasks) of a team's
+// post-incident tasks. page is 1-based; 0 and 1 both fetch the first page.
+func (c *PostIncidentTaskService) GetPostIncidentTasksPage(team string, page int) (*PostIncidentTaskPagination, error) {
 	path := fmt.Sprintf("/api/account/teams/%s/post_incident_tasks/", team)
+	if page > 1 {
+		path += "?page=" + strconv.Itoa(page)
+	}
 	body, err := c.client.newRequestDo("GET", path, nil)
 	if err != nil {
 		return nil, err
@@ -59,6 +70,22 @@ func (c *PostIncidentTaskService) GetPostIncidentTasks(team string) (*PostIncide
 		return nil, err
 	}
 	return &s, nil
+}
+
+// GetAllPostIncidentTasks follows pagination and returns every post-incident
+// task on the team.
+func (c *PostIncidentTaskService) GetAllPostIncidentTasks(team string) ([]PostIncidentTaskObj, error) {
+	var tasks []PostIncidentTaskObj
+	for page := 1; ; page++ {
+		p, err := c.GetPostIncidentTasksPage(team, page)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, p.Results...)
+		if p.Next == "" || len(p.Results) == 0 {
+			return tasks, nil
+		}
+	}
 }
 
 func (c *PostIncidentTaskService) GetPostIncidentTaskByID(team, id string) (*PostIncidentTaskObj, error) {
