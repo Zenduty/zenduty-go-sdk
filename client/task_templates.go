@@ -11,7 +11,10 @@ type TaskTemplateObj struct {
 	UniqueID     string `json:"unique_id,omitempty"`
 	Team         string `json:"team,omitempty"`
 	Name         string `json:"name"`
-	Summary      string `json:"summary"`
+	// omitempty: the API's serializer rejects an explicit "" ("This field may
+	// not be blank") but applies the model default "" when the key is absent,
+	// so a blank summary must be expressed by omitting the field
+	Summary      string `json:"summary,omitempty"`
 	CreationDate string `json:"creation_date,omitempty"`
 }
 
