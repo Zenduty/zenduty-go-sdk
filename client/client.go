@@ -5,8 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"net/url"
+	"strconv"
+	"time"
 )
 
 const (
@@ -43,6 +46,7 @@ type Client struct {
 	MaintenanceWindow *MaintenanceWindowService
 	NotificationRules *NotificationRulesService
 	ContactMethod     *ContactMethodService
+	Applications      *ApplicationsService
 	AccountRole       *AccountRoleService
 	GlobalRouter      *GlobalRouterService
 	Events            *EventsService
@@ -92,6 +96,7 @@ func NewClient(config *Config) (*Client, error) {
 	c.MaintenanceWindow = &MaintenanceWindowService{c}
 	c.NotificationRules = &NotificationRulesService{c}
 	c.ContactMethod = &ContactMethodService{c}
+	c.Applications = &ApplicationsService{c}
 	c.AccountRole = &AccountRoleService{c}
 	c.GlobalRouter = &GlobalRouterService{c}
 	c.Events = &EventsService{c}
@@ -129,11 +134,35 @@ func (c *Client) newRequest(method, path string, body interface{}) (*http.Reques
 }
 
 func (c *Client) newRequestDo(method, path string, body interface{}) (*Response, error) {
-	req, err := c.newRequest(method, path, body)
-	if err != nil {
-		return nil, err
+	var res *Response
+	var err error
+	backoff := 2 * time.Second
+	for attempt := 0; attempt < 6; attempt++ {
+		// build a fresh request each attempt: the previous one's body reader
+		// is already consumed
+		var req *http.Request
+		req, err = c.newRequest(method, path, body)
+		if err != nil {
+			return nil, err
+		}
+		res, err = c.doRequest(req)
+		// a 429 means the server rejected the request before processing it,
+		// so retrying is safe for every method; anything else returns as-is
+		if err == nil || res == nil || res.Response == nil || res.Response.StatusCode != http.StatusTooManyRequests {
+			return res, err
+		}
+		wait := backoff + time.Duration(rand.Int63n(int64(backoff/2)))
+		if retryAfter := res.Response.Header.Get("Retry-After"); retryAfter != "" {
+			if secs, parseErr := strconv.Atoi(retryAfter); parseErr == nil && secs > 0 {
+				wait = time.Duration(secs)*time.Second + time.Duration(rand.Int63n(int64(time.Second)))
+			}
+		}
+		time.Sleep(wait)
+		if backoff < 30*time.Second {
+			backoff *= 2
+		}
 	}
-	return c.doRequest(req)
+	return res, err
 }
 
 func (c *Client) doRequest(req *http.Request) (*Response, error) {
