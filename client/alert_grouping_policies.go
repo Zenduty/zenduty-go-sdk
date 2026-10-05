@@ -7,23 +7,15 @@ import (
 
 type AlertGroupingPolicyService service
 
-// AlertGroupingMatchFields lists the payload fields a content-based
-// collation policy compares across alerts. StaticFields holds the built-in
-// options (incident_title, incident_summary, integration); CustomFields
-// holds arbitrary JSON keys from the integration payload.
 type AlertGroupingMatchFields struct {
 	StaticFields []string `json:"static_fields"`
 	CustomFields []string `json:"custom_fields"`
 }
 
-// AlertGroupingPolicy configures content-based alert collation for a
-// service (backend endpoint: alert-grouping-policies). MatchMode selects
-// whether any or all of MatchFields must match for alerts to be grouped.
 type AlertGroupingPolicy struct {
 	UniqueID  string `json:"unique_id,omitempty"`
 	Service   string `json:"service,omitempty"`
 	MatchMode int    `json:"match_mode"`
-	// TimeWindow only takes effect while IsActive is true.
 	MatchFields AlertGroupingMatchFields `json:"match_fields"`
 	TimeWindow  int                      `json:"time_window"`
 	IsActive    bool                     `json:"is_active"`
