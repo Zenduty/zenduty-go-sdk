@@ -13,9 +13,9 @@ type AlertGroupingMatchFields struct {
 }
 
 type AlertGroupingPolicy struct {
-	UniqueID  string `json:"unique_id,omitempty"`
-	Service   string `json:"service,omitempty"`
-	MatchMode int    `json:"match_mode"`
+	UniqueID    string                   `json:"unique_id,omitempty"`
+	Service     string                   `json:"service,omitempty"`
+	MatchMode   int                      `json:"match_mode"`
 	MatchFields AlertGroupingMatchFields `json:"match_fields"`
 	TimeWindow  int                      `json:"time_window"`
 	IsActive    bool                     `json:"is_active"`
