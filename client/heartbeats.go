@@ -20,7 +20,9 @@ const (
 )
 
 // Heartbeat is an account-level heartbeat monitor. Status is one of
-// "disabled", "pending", "healthy" or "expired".
+// "disabled", "pending", "healthy" or "expired". AlertUrgency is nullable on
+// the API; nil leaves the stored value alone on update and the API default on
+// create.
 type Heartbeat struct {
 	UniqueID             string `json:"unique_id,omitempty"`
 	Name                 string `json:"name"`
@@ -36,7 +38,7 @@ type Heartbeat struct {
 	ExpiresAt            string `json:"expires_at,omitempty"`
 	OpenIncidentNumber   *int   `json:"open_incident_number,omitempty"`
 	AlertMessage         string `json:"alert_message"`
-	AlertUrgency         *int   `json:"alert_urgency"`
+	AlertUrgency         *int   `json:"alert_urgency,omitempty"`
 	PingType             int    `json:"ping_type"`
 	EmailSubjectContains string `json:"email_subject_contains"`
 	PingURL              string `json:"ping_url,omitempty"`

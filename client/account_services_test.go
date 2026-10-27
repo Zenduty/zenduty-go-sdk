@@ -67,22 +67,45 @@ func TestGetAllFollowsPagination(t *testing.T) {
 	}
 }
 
-// alert_urgency is nullable on the API: nil must serialise as null, not be dropped.
-func TestHeartbeatMarshalsNullUrgency(t *testing.T) {
+// alert_urgency is nullable on the API: an unset pointer is omitted so a PATCH
+// leaves the stored value alone, while a set pointer (even 0) is sent.
+func TestHeartbeatOmitsUnsetUrgency(t *testing.T) {
 	body, err := json.Marshal(Heartbeat{Name: "hb", IntervalSeconds: 60})
 	if err != nil {
 		t.Fatal(err)
 	}
 	s := string(body)
-	for _, want := range []string{`"alert_urgency":null`, `"is_enabled":false`, `"ping_type":0`, `"interval_seconds":60`} {
+	for _, want := range []string{`"is_enabled":false`, `"ping_type":0`, `"interval_seconds":60`} {
 		if !strings.Contains(s, want) {
 			t.Errorf("body %s lacks %s", s, want)
 		}
 	}
-	for _, reject := range []string{"ping_url", "status", "unique_id", "service"} {
+	for _, reject := range []string{"alert_urgency", "ping_url", "status", "unique_id", "service"} {
 		if strings.Contains(s, `"`+reject+`"`) {
-			t.Errorf("body %s must omit empty read-only %s", s, reject)
+			t.Errorf("body %s must omit %s", s, reject)
 		}
+	}
+	low := 0
+	body, _ = json.Marshal(Heartbeat{Name: "hb", IntervalSeconds: 60, AlertUrgency: &low})
+	if !strings.Contains(string(body), `"alert_urgency":0`) {
+		t.Errorf("a set urgency of 0 must be sent, got %s", body)
+	}
+}
+
+// Fields the API keeps when omitted must be sent explicitly so they can be cleared.
+func TestClearableFieldsAreAlwaysSent(t *testing.T) {
+	body, err := json.Marshal(WebhookConfiguration{URL: "https://example.org/h", Event: []string{"incident_create"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{`"filter":""`, `"auth_secret_key":""`, `"api_key":""`} {
+		if !strings.Contains(string(body), want) {
+			t.Errorf("webhook body %s lacks %s", body, want)
+		}
+	}
+	body, _ = json.Marshal(ServiceMaintenanceWindow{Name: "w"})
+	if !strings.Contains(string(body), `"repeat_until":null`) || !strings.Contains(string(body), `"repeat_interval":0`) {
+		t.Errorf("window body %s must send null repeat_until and 0 repeat_interval", body)
 	}
 }
 

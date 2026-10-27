@@ -92,18 +92,19 @@ func (c *MaintenanceWindowService) GetMaintenanceWindowByID(team string, mainten
 // ServiceMaintenanceWindow is a maintenance window attached to one service
 // (teams/<team>/services/<service>/maintenance/), as opposed to the
 // team-level MaintenanceWindow that lists its services. RepeatInterval is
-// always sent so a window can be set back to non-repeating (0).
+// always sent so a window can be set back to non-repeating (0), and
+// RepeatUntil is a pointer so nil sends null and clears it.
 type ServiceMaintenanceWindow struct {
-	UniqueID       string `json:"unique_id,omitempty"`
-	Service        string `json:"service,omitempty"`
-	Name           string `json:"name"`
-	StartTime      string `json:"start_time"`
-	EndTime        string `json:"end_time"`
-	TimeZone       string `json:"time_zone"`
-	RepeatInterval int    `json:"repeat_interval"`
-	RepeatUntil    string `json:"repeat_until,omitempty"`
-	CreatedBy      string `json:"created_by,omitempty"`
-	CreationDate   string `json:"creation_date,omitempty"`
+	UniqueID       string  `json:"unique_id,omitempty"`
+	Service        string  `json:"service,omitempty"`
+	Name           string  `json:"name"`
+	StartTime      string  `json:"start_time"`
+	EndTime        string  `json:"end_time"`
+	TimeZone       string  `json:"time_zone"`
+	RepeatInterval int     `json:"repeat_interval"`
+	RepeatUntil    *string `json:"repeat_until"`
+	CreatedBy      string  `json:"created_by,omitempty"`
+	CreationDate   string  `json:"creation_date,omitempty"`
 }
 
 func serviceMaintenancePath(team, service string) string {

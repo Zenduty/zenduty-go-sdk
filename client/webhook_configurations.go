@@ -12,14 +12,15 @@ var WebhookConfigurationEvents = []string{"oncall_change", "incident_create", "i
 
 // WebhookConfiguration is an account-level outgoing webhook. The API masks
 // AuthSecretKey and APIKey on read ("********" / first four characters plus
-// "********"), so a read never returns the stored secrets.
+// "********"), so a read never returns the stored secrets. Filter and the two
+// secrets are always sent, so an empty string clears them on update.
 type WebhookConfiguration struct {
 	UniqueID      string   `json:"unique_id,omitempty"`
 	URL           string   `json:"url"`
 	Event         []string `json:"event"`
-	AuthSecretKey string   `json:"auth_secret_key,omitempty"`
-	APIKey        string   `json:"api_key,omitempty"`
-	Filter        string   `json:"filter,omitempty"`
+	AuthSecretKey string   `json:"auth_secret_key"`
+	APIKey        string   `json:"api_key"`
+	Filter        string   `json:"filter"`
 }
 
 const webhookConfigurationsPath = "/api/v2/account/webhookconfiguration/"
