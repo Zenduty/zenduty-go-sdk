@@ -27,34 +27,44 @@ type Config struct {
 }
 
 type Client struct {
-	baseURL             *url.URL
-	client              *http.Client
-	Config              *Config
-	Teams               *TeamService
-	Services            *Service
-	Schedules           *ScheduleService
-	Roles               *RoleService
-	Integrations        *IntegrationServerice
-	Incidents           *IncidentService
-	Esp                 *EspService
-	Members             *MemberService
-	Invite              *InviteService
-	Users               *UserService
-	AlertRules          *AlertRuleService
-	Priority            *PriorityService
-	Tags                *TagsService
-	MaintenanceWindow   *MaintenanceWindowService
-	NotificationRules   *NotificationRulesService
-	ContactMethod       *ContactMethodService
-	Applications        *ApplicationsService
-	AccountRole         *AccountRoleService
-	GlobalRouter        *GlobalRouterService
-	Events              *EventsService
-	Sla                 *SLAService
-	PostIncidentTask    *PostIncidentTaskService
-	TaskTemplate        *TaskTemplateService
-	OutgoingRules       *OutgoingRulesService
-	AlertGroupingPolicy *AlertGroupingPolicyService
+	baseURL                    *url.URL
+	client                     *http.Client
+	Config                     *Config
+	Teams                      *TeamService
+	Services                   *Service
+	Schedules                  *ScheduleService
+	Roles                      *RoleService
+	Integrations               *IntegrationServerice
+	Incidents                  *IncidentService
+	Esp                        *EspService
+	Members                    *MemberService
+	Invite                     *InviteService
+	Users                      *UserService
+	AlertRules                 *AlertRuleService
+	Priority                   *PriorityService
+	Tags                       *TagsService
+	MaintenanceWindow          *MaintenanceWindowService
+	NotificationRules          *NotificationRulesService
+	ContactMethod              *ContactMethodService
+	Applications               *ApplicationsService
+	AccountRole                *AccountRoleService
+	GlobalRouter               *GlobalRouterService
+	Events                     *EventsService
+	Sla                        *SLAService
+	PostIncidentTask           *PostIncidentTaskService
+	TaskTemplate               *TaskTemplateService
+	OutgoingRules              *OutgoingRulesService
+	AlertGroupingPolicy        *AlertGroupingPolicyService
+	Heartbeats                 *HeartbeatService
+	AccountSetting             *AccountSettingService
+	WebhookConfiguration       *WebhookConfigurationService
+	AccountStakeholderTemplate *AccountStakeholderTemplateService
+	MaintenanceTemplate        *MaintenanceTemplateService
+	ServiceContext             *ServiceContextService
+	IncidentCustomField        *IncidentCustomFieldService
+	IncidentType               *IncidentTypeService
+	ForwardingRule             *ForwardingRuleService
+	Workflow                   *WorkflowService
 }
 
 type Response struct {
@@ -106,6 +116,16 @@ func NewClient(config *Config) (*Client, error) {
 	c.TaskTemplate = &TaskTemplateService{c}
 	c.OutgoingRules = &OutgoingRulesService{c}
 	c.AlertGroupingPolicy = &AlertGroupingPolicyService{c}
+	c.Heartbeats = &HeartbeatService{c}
+	c.AccountSetting = &AccountSettingService{c}
+	c.WebhookConfiguration = &WebhookConfigurationService{c}
+	c.AccountStakeholderTemplate = &AccountStakeholderTemplateService{c}
+	c.MaintenanceTemplate = &MaintenanceTemplateService{c}
+	c.ServiceContext = &ServiceContextService{c}
+	c.IncidentCustomField = &IncidentCustomFieldService{c}
+	c.IncidentType = &IncidentTypeService{c}
+	c.ForwardingRule = &ForwardingRuleService{c}
+	c.Workflow = &WorkflowService{c}
 	return c, nil
 
 }

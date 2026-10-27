@@ -88,3 +88,81 @@ func (c *MaintenanceWindowService) GetMaintenanceWindowByID(team string, mainten
 	}
 	return &s, nil
 }
+
+// ServiceMaintenanceWindow is a maintenance window attached to one service
+// (teams/<team>/services/<service>/maintenance/), as opposed to the
+// team-level MaintenanceWindow that lists its services. RepeatInterval is
+// always sent so a window can be set back to non-repeating (0).
+type ServiceMaintenanceWindow struct {
+	UniqueID       string `json:"unique_id,omitempty"`
+	Service        string `json:"service,omitempty"`
+	Name           string `json:"name"`
+	StartTime      string `json:"start_time"`
+	EndTime        string `json:"end_time"`
+	TimeZone       string `json:"time_zone"`
+	RepeatInterval int    `json:"repeat_interval"`
+	RepeatUntil    string `json:"repeat_until,omitempty"`
+	CreatedBy      string `json:"created_by,omitempty"`
+	CreationDate   string `json:"creation_date,omitempty"`
+}
+
+func serviceMaintenancePath(team, service string) string {
+	return fmt.Sprintf("/api/account/teams/%s/services/%s/maintenance/", team, service)
+}
+
+func (c *MaintenanceWindowService) CreateServiceMaintenanceWindow(team, service string, window *ServiceMaintenanceWindow) (*ServiceMaintenanceWindow, error) {
+	body, err := c.client.newRequestDo("POST", serviceMaintenancePath(team, service), window)
+	if err != nil {
+		return nil, err
+	}
+	var w ServiceMaintenanceWindow
+	if err := json.Unmarshal(body.BodyBytes, &w); err != nil {
+		return nil, err
+	}
+	return &w, nil
+}
+
+func (c *MaintenanceWindowService) GetServiceMaintenanceWindows(team, service string) ([]ServiceMaintenanceWindow, error) {
+	var all []ServiceMaintenanceWindow
+	err := c.client.getAll(serviceMaintenancePath(team, service), func(results []byte) error {
+		var page []ServiceMaintenanceWindow
+		if err := json.Unmarshal(results, &page); err != nil {
+			return err
+		}
+		all = append(all, page...)
+		return nil
+	})
+	return all, err
+}
+
+func (c *MaintenanceWindowService) GetServiceMaintenanceWindowByID(team, service, id string) (*ServiceMaintenanceWindow, error) {
+	path := serviceMaintenancePath(team, service) + id + "/"
+	body, err := c.client.newRequestDo("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+	var w ServiceMaintenanceWindow
+	if err := json.Unmarshal(body.BodyBytes, &w); err != nil {
+		return nil, err
+	}
+	return &w, nil
+}
+
+func (c *MaintenanceWindowService) UpdateServiceMaintenanceWindow(team, service, id string, window *ServiceMaintenanceWindow) (*ServiceMaintenanceWindow, error) {
+	path := serviceMaintenancePath(team, service) + id + "/"
+	body, err := c.client.newRequestDo("PATCH", path, window)
+	if err != nil {
+		return nil, err
+	}
+	var w ServiceMaintenanceWindow
+	if err := json.Unmarshal(body.BodyBytes, &w); err != nil {
+		return nil, err
+	}
+	return &w, nil
+}
+
+func (c *MaintenanceWindowService) DeleteServiceMaintenanceWindow(team, service, id string) error {
+	path := serviceMaintenancePath(team, service) + id + "/"
+	_, err := c.client.newRequestDo("DELETE", path, nil)
+	return err
+}
