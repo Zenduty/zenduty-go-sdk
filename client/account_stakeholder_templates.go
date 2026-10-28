@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 type AccountStakeholderTemplateService service
@@ -45,17 +46,20 @@ func (c *AccountStakeholderTemplateService) GetAccountStakeholderTemplates() ([]
 	return all, err
 }
 
+// GetAccountStakeholderTemplate finds one template through the list endpoint:
+// the detail GET is denied by the backend's object permission for this model
+// (PATCH, PUT and DELETE on it work). A missing id yields a 404 error.
 func (c *AccountStakeholderTemplateService) GetAccountStakeholderTemplate(id string) (*AccountStakeholderTemplate, error) {
-	path := fmt.Sprintf("%s%s/", accountStakeholderTemplatesPath, id)
-	body, err := c.client.newRequestDo("GET", path, nil)
+	templates, err := c.GetAccountStakeholderTemplates()
 	if err != nil {
 		return nil, err
 	}
-	var t AccountStakeholderTemplate
-	if err := json.Unmarshal(body.BodyBytes, &t); err != nil {
-		return nil, err
+	for i := range templates {
+		if templates[i].UniqueID == id {
+			return &templates[i], nil
+		}
 	}
-	return &t, nil
+	return nil, &Error{Code: http.StatusNotFound, Message: fmt.Sprintf("stakeholder template %s not found", id)}
 }
 
 func (c *AccountStakeholderTemplateService) UpdateAccountStakeholderTemplate(id string, template *AccountStakeholderTemplate) (*AccountStakeholderTemplate, error) {

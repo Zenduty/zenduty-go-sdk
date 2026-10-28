@@ -173,3 +173,25 @@ func TestStakeholderTemplateDecodesNumericAccount(t *testing.T) {
 		t.Errorf("got %+v", tpl)
 	}
 }
+
+// The detail GET is forbidden for stakeholder templates, so Get goes through
+// the list and reports a missing id as a 404.
+func TestStakeholderTemplateGetUsesList(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/account/account-stakeholder-template/" {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		w.Write([]byte(`{"next":null,"results":[{"unique_id":"a","account":1,"title":"A"},{"unique_id":"b","account":1,"title":"B"}]}`))
+	}))
+	defer server.Close()
+	c, _ := NewClient(&Config{BaseURL: server.URL, Token: "t"})
+	got, err := c.AccountStakeholderTemplate.GetAccountStakeholderTemplate("b")
+	if err != nil || got.Title != "B" {
+		t.Fatalf("got %+v, %v", got, err)
+	}
+	_, err = c.AccountStakeholderTemplate.GetAccountStakeholderTemplate("zzz")
+	if !IsNotFound(err) || err.Error() == "" {
+		t.Fatalf("missing id must be a 404 error, got %v", err)
+	}
+}
