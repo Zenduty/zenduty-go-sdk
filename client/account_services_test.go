@@ -162,3 +162,14 @@ func TestIncidentTypeReadShapeDecodes(t *testing.T) {
 		t.Errorf("got %+v", it.FormToggles)
 	}
 }
+
+// The stakeholder template serializer returns account as a numeric pk.
+func TestStakeholderTemplateDecodesNumericAccount(t *testing.T) {
+	var tpl AccountStakeholderTemplate
+	if err := json.Unmarshal([]byte(`{"unique_id":"u","account":42,"title":"t","subject":"s","template":"","creation_date":"2026-10-28T10:00:00Z"}`), &tpl); err != nil {
+		t.Fatal(err)
+	}
+	if tpl.UniqueID != "u" || tpl.Title != "t" {
+		t.Errorf("got %+v", tpl)
+	}
+}

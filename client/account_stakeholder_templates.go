@@ -8,9 +8,10 @@ import (
 type AccountStakeholderTemplateService service
 
 // AccountStakeholderTemplate is an account-level stakeholder update template.
+// The API's account field on this object is a numeric primary key, unlike the
+// unique_id slugs elsewhere, so it is not modelled.
 type AccountStakeholderTemplate struct {
 	UniqueID     string `json:"unique_id,omitempty"`
-	Account      string `json:"account,omitempty"`
 	Title        string `json:"title"`
 	Subject      string `json:"subject"`
 	Template     string `json:"template"`
