@@ -7,10 +7,8 @@ import (
 
 type ForwardingRuleService service
 
-// ForwardingRule forwards a user's notifications to another user between
-// FromDate and ToDate (ISO 8601, UTC). The API offers no update: a rule is
-// created and deleted only. Listing a user's rules returns the rules they
-// forward and the rules forwarded to them; check User to tell them apart.
+// ForwardingRule forwards a user's notifications for a period; no update exists.
+// A user's list also contains rules forwarded to them (see User).
 type ForwardingRule struct {
 	UniqueID     string `json:"unique_id,omitempty"`
 	User         string `json:"user,omitempty"`

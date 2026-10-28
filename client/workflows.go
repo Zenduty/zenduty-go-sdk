@@ -7,22 +7,20 @@ import (
 
 type WorkflowService service
 
-// WorkflowTeamService is a service a workflow is restricted to within a team.
+// WorkflowTeamService is a service a workflow is restricted to.
 type WorkflowTeamService struct {
 	UniqueID string `json:"unique_id"`
 	Name     string `json:"name,omitempty"`
 }
 
-// WorkflowTeam is the read shape of a workflow's team scope. An empty
-// Services list means the workflow applies to every service of the team.
+// WorkflowTeam is the read shape of a team scope; no Services means every service.
 type WorkflowTeam struct {
 	UniqueID string                `json:"unique_id"`
 	Name     string                `json:"name,omitempty"`
 	Services []WorkflowTeamService `json:"services"`
 }
 
-// Workflow is the read shape of a workflow. JSONSchema is the serialised
-// node/edge graph; Owner is whatever the API returns for the owning user.
+// Workflow is the read shape of a workflow.
 type Workflow struct {
 	UniqueID     string         `json:"unique_id,omitempty"`
 	Name         string         `json:"name"`
@@ -42,9 +40,7 @@ type WorkflowTeamInput struct {
 	Services []string `json:"services"`
 }
 
-// WorkflowInput is the write shape of a workflow. Teams is declarative: the
-// scope is replaced with exactly the teams listed, so nil is sent as an
-// empty array rather than omitted.
+// WorkflowInput is the write shape; Teams replaces the scope, so nil is sent as [].
 type WorkflowInput struct {
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
@@ -82,9 +78,7 @@ func (c *WorkflowService) CreateWorkflow(input *WorkflowInput) (*Workflow, error
 	return &w, nil
 }
 
-// GetWorkflows follows pagination and returns every workflow. The list
-// endpoint returns a reduced shape: json_schema is empty and teams carry no
-// services; use GetWorkflow for the full object.
+// GetWorkflows follows pagination; the list shape has no json_schema or services.
 func (c *WorkflowService) GetWorkflows() ([]Workflow, error) {
 	var all []Workflow
 	err := c.client.getAll(workflowsPath, func(results []byte) error {

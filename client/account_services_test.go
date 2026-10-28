@@ -36,7 +36,6 @@ func TestNextPagePathKeepsPathAndQuery(t *testing.T) {
 	}
 }
 
-// getAll must follow "next" across pages and stop on the last one.
 func TestGetAllFollowsPagination(t *testing.T) {
 	var server *httptest.Server
 	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -67,8 +66,7 @@ func TestGetAllFollowsPagination(t *testing.T) {
 	}
 }
 
-// alert_urgency is nullable on the API: an unset pointer is omitted so a PATCH
-// leaves the stored value alone, while a set pointer (even 0) is sent.
+// An unset urgency is omitted; a set one (even 0) is sent.
 func TestHeartbeatOmitsUnsetUrgency(t *testing.T) {
 	body, err := json.Marshal(Heartbeat{Name: "hb", IntervalSeconds: 60})
 	if err != nil {
@@ -92,7 +90,6 @@ func TestHeartbeatOmitsUnsetUrgency(t *testing.T) {
 	}
 }
 
-// Fields the API keeps when omitted must be sent explicitly so they can be cleared.
 func TestClearableFieldsAreAlwaysSent(t *testing.T) {
 	body, err := json.Marshal(WebhookConfiguration{URL: "https://example.org/h", Event: []string{"incident_create"}})
 	if err != nil {
@@ -109,7 +106,6 @@ func TestClearableFieldsAreAlwaysSent(t *testing.T) {
 	}
 }
 
-// The API rejects null for form_toggles and custom_fields; nil slices go out as [].
 func TestIncidentTypeInputSendsEmptyArrays(t *testing.T) {
 	body, err := json.Marshal(&IncidentTypeInput{Name: "Outage"})
 	if err != nil {

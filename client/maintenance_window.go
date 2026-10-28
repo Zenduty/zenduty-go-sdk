@@ -89,11 +89,8 @@ func (c *MaintenanceWindowService) GetMaintenanceWindowByID(team string, mainten
 	return &s, nil
 }
 
-// ServiceMaintenanceWindow is a maintenance window attached to one service
-// (teams/<team>/services/<service>/maintenance/), as opposed to the
-// team-level MaintenanceWindow that lists its services. RepeatInterval is
-// always sent so a window can be set back to non-repeating (0), and
-// RepeatUntil is a pointer so nil sends null and clears it.
+// ServiceMaintenanceWindow is a maintenance window on a single service. A nil
+// RepeatUntil sends null and clears it.
 type ServiceMaintenanceWindow struct {
 	UniqueID       string  `json:"unique_id,omitempty"`
 	Service        string  `json:"service,omitempty"`

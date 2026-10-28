@@ -8,7 +8,6 @@ import (
 type AccountStakeholderTemplateService service
 
 // AccountStakeholderTemplate is an account-level stakeholder update template.
-// Titles are unique within the account.
 type AccountStakeholderTemplate struct {
 	UniqueID     string `json:"unique_id,omitempty"`
 	Account      string `json:"account,omitempty"`
@@ -32,7 +31,6 @@ func (c *AccountStakeholderTemplateService) CreateAccountStakeholderTemplate(tem
 	return &t, nil
 }
 
-// GetAccountStakeholderTemplates follows pagination and returns every template.
 func (c *AccountStakeholderTemplateService) GetAccountStakeholderTemplates() ([]AccountStakeholderTemplate, error) {
 	var all []AccountStakeholderTemplate
 	err := c.client.getAll(accountStakeholderTemplatesPath, func(results []byte) error {

@@ -7,7 +7,7 @@ import (
 
 type HeartbeatService service
 
-// Heartbeat ping types (HeartbeatPingType on the backend).
+// Heartbeat ping types.
 const (
 	HeartbeatPingWebhook = 0
 	HeartbeatPingEmail   = 1
@@ -19,10 +19,8 @@ const (
 	HeartbeatMaxIntervalSeconds = 90 * 24 * 3600
 )
 
-// Heartbeat is an account-level heartbeat monitor. Status is one of
-// "disabled", "pending", "healthy" or "expired". AlertUrgency is nullable on
-// the API; nil leaves the stored value alone on update and the API default on
-// create.
+// Heartbeat is an account-level heartbeat monitor. A nil AlertUrgency leaves
+// the stored value untouched.
 type Heartbeat struct {
 	UniqueID             string `json:"unique_id,omitempty"`
 	Name                 string `json:"name"`
@@ -61,7 +59,6 @@ func (c *HeartbeatService) CreateHeartbeat(heartbeat *Heartbeat) (*Heartbeat, er
 	return &h, nil
 }
 
-// GetHeartbeats lists every heartbeat of the account.
 func (c *HeartbeatService) GetHeartbeats() ([]Heartbeat, error) {
 	var all []Heartbeat
 	err := c.client.getAll(heartbeatsPath, func(results []byte) error {
@@ -88,8 +85,7 @@ func (c *HeartbeatService) GetHeartbeat(id string) (*Heartbeat, error) {
 	return &h, nil
 }
 
-// UpdateHeartbeat patches a heartbeat. The service cannot be changed after
-// creation; the API ignores it on update.
+// UpdateHeartbeat patches a heartbeat; the service cannot change after creation.
 func (c *HeartbeatService) UpdateHeartbeat(id string, heartbeat *Heartbeat) (*Heartbeat, error) {
 	path := fmt.Sprintf("%s%s/", heartbeatsPath, id)
 	body, err := c.client.newRequestDo("PATCH", path, heartbeat)

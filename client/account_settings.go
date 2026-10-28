@@ -4,8 +4,7 @@ import "encoding/json"
 
 type AccountSettingService service
 
-// AccountSetting is the account's singleton settings object. Fields are
-// pointers so an update only sends the settings that were set.
+// AccountSetting is the account's singleton settings; unset pointers are not sent.
 type AccountSetting struct {
 	Account                    string `json:"account,omitempty"`
 	EnableDeleteIncident       *bool  `json:"enable_delete_incident,omitempty"`
@@ -16,8 +15,6 @@ type AccountSetting struct {
 
 const accountSettingPath = "/api/account/account-setting/"
 
-// GetAccountSetting reads the account settings. The backend creates the
-// settings row with its defaults on first read.
 func (c *AccountSettingService) GetAccountSetting() (*AccountSetting, error) {
 	body, err := c.client.newRequestDo("GET", accountSettingPath, nil)
 	if err != nil {
@@ -30,7 +27,6 @@ func (c *AccountSettingService) GetAccountSetting() (*AccountSetting, error) {
 	return &s, nil
 }
 
-// UpdateAccountSetting patches the settings that are set on setting.
 func (c *AccountSettingService) UpdateAccountSetting(setting *AccountSetting) (*AccountSetting, error) {
 	body, err := c.client.newRequestDo("PATCH", accountSettingPath, setting)
 	if err != nil {

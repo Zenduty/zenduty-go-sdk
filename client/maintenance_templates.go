@@ -7,9 +7,7 @@ import (
 
 type MaintenanceTemplateService service
 
-// MaintenanceTemplate is a team-level rule (react-query-builder tree in
-// RuleJSON, the same format alert rules use) that suppresses matching alerts
-// while a maintenance window referencing it is active.
+// MaintenanceTemplate is a team-level alert-suppression rule; RuleJSON uses the alert-rule format.
 type MaintenanceTemplate struct {
 	UniqueID  string `json:"unique_id,omitempty"`
 	Name      string `json:"name"`

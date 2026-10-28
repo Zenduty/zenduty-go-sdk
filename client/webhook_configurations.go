@@ -10,10 +10,8 @@ type WebhookConfigurationService service
 // WebhookConfigurationEvents are the events an account webhook can subscribe to.
 var WebhookConfigurationEvents = []string{"oncall_change", "incident_create", "incident_acknowledge", "incident_resolve"}
 
-// WebhookConfiguration is an account-level outgoing webhook. The API masks
-// AuthSecretKey and APIKey on read ("********" / first four characters plus
-// "********"), so a read never returns the stored secrets. Filter and the two
-// secrets are always sent, so an empty string clears them on update.
+// WebhookConfiguration is an account-level outgoing webhook. Reads return
+// masked secrets; an empty Filter or secret clears it on update.
 type WebhookConfiguration struct {
 	UniqueID      string   `json:"unique_id,omitempty"`
 	URL           string   `json:"url"`

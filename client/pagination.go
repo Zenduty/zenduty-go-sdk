@@ -6,8 +6,7 @@ import (
 	"net/url"
 )
 
-// listPage is the envelope Zenduty's paginated list endpoints return
-// (PageNumberPagination, with or without a count).
+// listPage is the envelope paginated list endpoints return.
 type listPage struct {
 	Next     string          `json:"next"`
 	Previous string          `json:"previous"`
@@ -15,9 +14,8 @@ type listPage struct {
 	Results  json.RawMessage `json:"results"`
 }
 
-// decodeList unmarshals a list endpoint's body into v. The body is either a
-// bare JSON array or a pagination envelope with the array under "results";
-// for an envelope the "next" link is returned so the caller can follow it.
+// decodeList unmarshals a bare JSON array or a {results, next} envelope into v
+// and returns the next-page link, if any.
 func decodeList(body []byte, v interface{}) (next string, err error) {
 	trimmed := bytes.TrimLeft(body, " \t\r\n")
 	if len(trimmed) > 0 && trimmed[0] == '{' {
@@ -33,9 +31,8 @@ func decodeList(body []byte, v interface{}) (next string, err error) {
 	return "", json.Unmarshal(body, v)
 }
 
-// nextPagePath turns a pagination "next" link into a request path. The link
-// is absolute and carries whatever host the backend was reached through, so
-// only its path and query are kept; they resolve against the client's base URL.
+// nextPagePath keeps only the path and query of a "next" link so it resolves
+// against the client's base URL.
 func nextPagePath(next string) (string, error) {
 	u, err := url.Parse(next)
 	if err != nil {
@@ -48,8 +45,7 @@ func nextPagePath(next string) (string, error) {
 	return path, nil
 }
 
-// getAll fetches every page of a list endpoint. appendPage receives the raw
-// JSON array of one page and is expected to unmarshal and accumulate it.
+// getAll fetches every page of a list endpoint, passing each raw page array to appendPage.
 func (c *Client) getAll(path string, appendPage func(results []byte) error) error {
 	seen := map[string]bool{}
 	for path != "" && !seen[path] {

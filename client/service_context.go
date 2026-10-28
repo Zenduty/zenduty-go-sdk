@@ -7,8 +7,7 @@ import (
 
 type ServiceContextService service
 
-// ServiceContext links a context integration to a service. A service can
-// link each integration once; there is no update, only create and delete.
+// ServiceContext links a context integration to a service; create and delete only.
 type ServiceContext struct {
 	UniqueID     string `json:"unique_id,omitempty"`
 	Service      string `json:"service,omitempty"`
