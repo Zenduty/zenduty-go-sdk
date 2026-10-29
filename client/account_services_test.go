@@ -1,0 +1,197 @@
+package client
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+)
+
+func TestDecodeListHandlesArrayAndEnvelope(t *testing.T) {
+	var fromArray []AccountStakeholderTemplate
+	next, err := decodeList([]byte(`[{"title":"a"},{"title":"b"}]`), &fromArray)
+	if err != nil || next != "" || len(fromArray) != 2 {
+		t.Fatalf("array: next=%q err=%v len=%d", next, err, len(fromArray))
+	}
+
+	var fromPage []AccountStakeholderTemplate
+	body := `{"next":"http://localhost:8000/api/x/?page=2","previous":null,"results":[{"title":"c"}]}`
+	next, err = decodeList([]byte(body), &fromPage)
+	if err != nil || next != "http://localhost:8000/api/x/?page=2" || len(fromPage) != 1 {
+		t.Fatalf("envelope: next=%q err=%v len=%d", next, err, len(fromPage))
+	}
+
+	var fromEmpty []AccountStakeholderTemplate
+	next, err = decodeList([]byte(`{"next":null,"results":[]}`), &fromEmpty)
+	if err != nil || next != "" || len(fromEmpty) != 0 {
+		t.Fatalf("empty envelope: next=%q err=%v len=%d", next, err, len(fromEmpty))
+	}
+}
+
+func TestNextPagePathKeepsPathAndQuery(t *testing.T) {
+	got, err := nextPagePath("http://internal-host:8000/api/workflows/?page=3&page_size=50")
+	if err != nil || got != "/api/workflows/?page=3&page_size=50" {
+		t.Fatalf("got %q, %v", got, err)
+	}
+}
+
+func TestGetAllFollowsPagination(t *testing.T) {
+	var server *httptest.Server
+	server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "token t" {
+			t.Errorf("missing auth header")
+		}
+		switch r.URL.RawQuery {
+		case "":
+			w.Write([]byte(`{"next":"` + server.URL + `/api/account/account-stakeholder-template/?page=2","results":[{"title":"one"}]}`))
+		case "page=2":
+			w.Write([]byte(`{"next":null,"results":[{"title":"two"}]}`))
+		default:
+			t.Errorf("unexpected query %q", r.URL.RawQuery)
+		}
+	}))
+	defer server.Close()
+
+	c, err := NewClient(&Config{BaseURL: server.URL, Token: "t"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	templates, err := c.AccountStakeholderTemplate.GetAccountStakeholderTemplates()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(templates) != 2 || templates[0].Title != "one" || templates[1].Title != "two" {
+		t.Fatalf("got %+v", templates)
+	}
+}
+
+// An unset urgency is omitted; a set one (even 0) is sent.
+func TestHeartbeatOmitsUnsetUrgency(t *testing.T) {
+	body, err := json.Marshal(Heartbeat{Name: "hb", IntervalSeconds: 60})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := string(body)
+	for _, want := range []string{`"is_enabled":false`, `"ping_type":0`, `"interval_seconds":60`} {
+		if !strings.Contains(s, want) {
+			t.Errorf("body %s lacks %s", s, want)
+		}
+	}
+	for _, reject := range []string{"alert_urgency", "ping_url", "status", "unique_id", "service"} {
+		if strings.Contains(s, `"`+reject+`"`) {
+			t.Errorf("body %s must omit %s", s, reject)
+		}
+	}
+	low := 0
+	body, _ = json.Marshal(Heartbeat{Name: "hb", IntervalSeconds: 60, AlertUrgency: &low})
+	if !strings.Contains(string(body), `"alert_urgency":0`) {
+		t.Errorf("a set urgency of 0 must be sent, got %s", body)
+	}
+}
+
+func TestClearableFieldsAreAlwaysSent(t *testing.T) {
+	body, err := json.Marshal(WebhookConfiguration{URL: "https://example.org/h", Event: []string{"incident_create"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{`"filter":""`, `"auth_secret_key":""`, `"api_key":""`} {
+		if !strings.Contains(string(body), want) {
+			t.Errorf("webhook body %s lacks %s", body, want)
+		}
+	}
+	body, _ = json.Marshal(ServiceMaintenanceWindow{Name: "w"})
+	if !strings.Contains(string(body), `"repeat_until":null`) || !strings.Contains(string(body), `"repeat_interval":0`) {
+		t.Errorf("window body %s must send null repeat_until and 0 repeat_interval", body)
+	}
+}
+
+func TestIncidentTypeInputSendsEmptyArrays(t *testing.T) {
+	body, err := json.Marshal(&IncidentTypeInput{Name: "Outage"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := string(body)
+	if !strings.Contains(s, `"form_toggles":[]`) || !strings.Contains(s, `"custom_fields":[]`) {
+		t.Errorf("got %s", s)
+	}
+	if strings.Contains(s, "is_active") {
+		t.Errorf("unset is_active must be omitted, got %s", s)
+	}
+}
+
+func TestWorkflowInputSendsEmptyArrays(t *testing.T) {
+	body, err := json.Marshal(&WorkflowInput{Name: "w", Teams: []WorkflowTeamInput{{UniqueID: "team"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := string(body)
+	if !strings.Contains(s, `"teams":[{"unique_id":"team","services":[]}]`) {
+		t.Errorf("got %s", s)
+	}
+	body, _ = json.Marshal(&WorkflowInput{Name: "w"})
+	if !strings.Contains(string(body), `"teams":[]`) {
+		t.Errorf("nil teams must be sent as [], got %s", body)
+	}
+}
+
+func TestAccountSettingOmitsUnsetFields(t *testing.T) {
+	f := false
+	body, err := json.Marshal(AccountSetting{EnableRegenKey: &f})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(body) != `{"enable_regen_key":false}` {
+		t.Errorf("got %s", body)
+	}
+}
+
+func TestIncidentTypeReadShapeDecodes(t *testing.T) {
+	body := `{"unique_id":"u","name":"Outage","is_default":true,"is_active":true,
+	  "form_toggles":[{"impacted_services":{"enabled":true,"ui:widget":"x"}},{"responders":false}],
+	  "custom_fields":{"type":"object","properties":{"custom_field_7":{"type":"string","title":"Region","default":"eu","position":1}},"required":["custom_field_7"]}}`
+	var it IncidentType
+	if err := json.Unmarshal([]byte(body), &it); err != nil {
+		t.Fatal(err)
+	}
+	f := it.CustomFields.Properties["custom_field_7"]
+	if f.Position != 1 || string(f.Default) != `"eu"` || it.CustomFields.Required[0] != "custom_field_7" {
+		t.Errorf("got %+v", it.CustomFields)
+	}
+	if len(it.FormToggles) != 2 {
+		t.Errorf("got %+v", it.FormToggles)
+	}
+}
+
+// The stakeholder template serializer returns account as a numeric pk.
+func TestStakeholderTemplateDecodesNumericAccount(t *testing.T) {
+	var tpl AccountStakeholderTemplate
+	if err := json.Unmarshal([]byte(`{"unique_id":"u","account":42,"title":"t","subject":"s","template":"","creation_date":"2026-10-28T10:00:00Z"}`), &tpl); err != nil {
+		t.Fatal(err)
+	}
+	if tpl.UniqueID != "u" || tpl.Title != "t" {
+		t.Errorf("got %+v", tpl)
+	}
+}
+
+// The detail GET is forbidden for stakeholder templates, so Get goes through
+// the list and reports a missing id as a 404.
+func TestStakeholderTemplateGetUsesList(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/account/account-stakeholder-template/" {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		w.Write([]byte(`{"next":null,"results":[{"unique_id":"a","account":1,"title":"A"},{"unique_id":"b","account":1,"title":"B"}]}`))
+	}))
+	defer server.Close()
+	c, _ := NewClient(&Config{BaseURL: server.URL, Token: "t"})
+	got, err := c.AccountStakeholderTemplate.GetAccountStakeholderTemplate("b")
+	if err != nil || got.Title != "B" {
+		t.Fatalf("got %+v, %v", got, err)
+	}
+	_, err = c.AccountStakeholderTemplate.GetAccountStakeholderTemplate("zzz")
+	if !IsNotFound(err) || err.Error() == "" {
+		t.Fatalf("missing id must be a 404 error, got %v", err)
+	}
+}

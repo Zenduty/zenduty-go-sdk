@@ -96,3 +96,26 @@ func (c *AccountRoleService) AssignRoleToUser(username string, role *AddRoleToUs
 	}
 	return &a, nil
 }
+
+// UserCustomRole is a user's custom account role; CustomRole is nil when none.
+type UserCustomRole struct {
+	User              string  `json:"user"`
+	CustomRole        *string `json:"custom_role"`
+	CustomRoleDetails *struct {
+		Name string `json:"name"`
+	} `json:"custom_role_details,omitempty"`
+}
+
+// GetUserRole reads a user's custom role; the API returns 403 for admins and owners.
+func (c *AccountRoleService) GetUserRole(username string) (*UserCustomRole, error) {
+	path := fmt.Sprintf("/api/account/users/%s/customroles/", username)
+	body, err := c.client.newRequestDo("GET", path, nil)
+	if err != nil {
+		return nil, err
+	}
+	var r UserCustomRole
+	if err := json.Unmarshal(body.BodyBytes, &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
